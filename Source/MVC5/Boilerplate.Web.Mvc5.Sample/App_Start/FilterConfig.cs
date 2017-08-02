@@ -68,11 +68,11 @@
 
             // X-Frame-Options - Adds the X-Frame-Options HTTP header. Stop clickjacking by stopping the page from
             //                   opening in an iframe or only allowing it from the same origin.
-            //      Deny - Specifies that the X-Frame-Options header should be set in the HTTP response, instructing
-            //             the browser to display the page when it is loaded in an iframe - but only if the iframe is
-            //             from the same origin as the page.
             //      SameOrigin - Specifies that the X-Frame-Options header should be set in the HTTP response,
-            //                   instructing the browser to not display the page when it is loaded in an iframe.
+            //                   instructing the browser to display the page when it is loaded in an iframe - but only
+            //                   if the iframe is from the same origin as the page.
+            //      Deny - Specifies that the X-Frame-Options header should be set in the HTTP response, instructing
+            //             the browser to not display the page when it is loaded in an iframe.
             //      Disabled - Specifies that the X-Frame-Options header should not be set in the HTTP response.
             filters.Add(
                 new XFrameOptionsAttribute()

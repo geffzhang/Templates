@@ -16,10 +16,10 @@
         <header class="jumbotron">
             <h1>ASP.NET MVC Boilerplate</h1>
             <p class="lead">A professional ASP.NET MVC template for building secure, fast, robust and adaptable web applications or sites. It provides the minimum amount of code required on top of the default MVC template provided by Microsoft.</p>
-            <p><a href="https://github.com/RehanSaeed/ASP.NET-MVC-Boilerplate" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+            <p><a href="https://github.com/ASP-NET-Core-Boilerplate/Templates" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
         </header>
 
-        <img src="https://raw.githubusercontent.com/RehanSaeed/ASP.NET-MVC-Boilerplate/master/Images/MVC%205%20Technology%20Map.png"
+        <img src="https://raw.githubusercontent.com/RehanSaeed/ASP.NET-Core-Boilerplate/master/Images/MVC%205%20Technology%20Map.png"
              style="max-width:100%;" />
 
         <div class="alert alert-info">
@@ -93,6 +93,10 @@
                     <li class="list-group-item">
                         <input name="ContentSecurityPolicy-UpgradeInsecureRequests" type="checkbox"> <strong>Enable Upgrade Insecure Requests</strong> -
                         Enable the upgrade-insecure-requests CSP directive in Startup.cs. Find out more at <a href="https://scotthelme.co.uk/migrating-from-http-to-https-ease-the-pain-with-csp-and-hsts/">ScottHemle.co.uk</a> or read the official specs <a href="http://www.w3.org/TR/upgrade-insecure-requests/">here</a>.
+                    </li>
+                    <li class="list-group-item">
+                        <input name="ContentSecurityPolicy-CSPEvaluator" type="checkbox"> <strong>Check CSP Evaluator</strong> -
+                        Run the Google <a href="https://csp-evaluator.withgoogle.com/">CSP Evaluator</a> against your site to check that your CSP policy valid and secure.
                     </li>
                 </ul>
                 <h4>Elmah</h4>
@@ -178,6 +182,10 @@
                     <li class="list-group-item">
                         <input name="OtherSecurity-AzureSQLThreatDetection" type="checkbox"> <strong>Turn on Azure SQL Database Threat Detection</strong> -
                         If you are using SQL Database on Azure, then turn on <a href="https://azure.microsoft.com/en-us/documentation/articles/sql-database-threat-detection-get-started/">Threat Detection</a>.
+                    </li>
+                    <li class="list-group-item">
+                        <input name="OtherSecurity-NoOpenerLinks" type="checkbox"> <strong>Use <code>rel="noopener"</code> Links</strong> -
+                        Don't open links in a new tab unless you <a href="https://css-tricks.com/use-target_blank/">really</a> have to. If you do, then use <code>rel="noopener"</code>. This also gives you a slight <a href="https://jakearchibald.com/2016/performance-benefits-of-rel-noopener/">performance boost</a>. Learn more <a href="https://developers.google.com/web/tools/lighthouse/audits/noopener">here</a>.
                     </li>
                 </ul>
             </article>
@@ -542,7 +550,7 @@
                     </li>
                     <li class="list-group-item">
                         <input name="KeepingYourSiteUpToDate-KeepTemplateUpToDate" type="checkbox"> <strong>Keep Template Up To Date</strong> -
-                        The ASP.NET MVC Boilerplate project template is constantly improving. Keep an eye on the <a href="https://github.com/RehanSaeed/ASP.NET-MVC-Boilerplate/blob/master/Source/MvcBoilerplateVsix/Release%20Notes.txt">release notes</a> and <a href="https://github.com/RehanSaeed/ASP.NET-MVC-Boilerplate/commits/master">commits</a> to the project and update your site accordingly.
+                        The ASP.NET MVC Boilerplate project template is constantly improving. Keep an eye on the <a href="https://github.com/ASP-NET-Core-Boilerplate/Templates/blob/master/RELEASE%20NOTES.md">release notes</a> and <a href="https://github.com/ASP-NET-Core-Boilerplate/Templates/commits/master">commits</a> to the project and update your site accordingly.
                     </li>
                 </ul>
             </article>

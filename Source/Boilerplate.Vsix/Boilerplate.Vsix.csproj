@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <FileUpgradeFlags>
@@ -44,6 +44,11 @@
     <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -64,7 +69,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Label="TemplateBuilder">
-    <TemplateBuilderTargets Condition=" '$(TemplateBuilderTargets)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\..\packages\TemplateBuilder.1.1.4.9-beta\tools\ligershark.templates.targets ))</TemplateBuilderTargets>
+    <TemplateBuilderTargets Condition=" '$(TemplateBuilderTargets)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\..\..\packages\TemplateBuilder.1.1.5-beta\tools\ligershark.templates.targets ))</TemplateBuilderTargets>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,27 +102,27 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NuGet.Core.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Release Notes.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="License.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Small Icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Small Preview Image.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="TemplateBuilder.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
@@ -125,30 +130,34 @@
     <TemplateReference Include="Boilerplate.Web.Mvc5.Sample.csproj">
       <PathToProject>../MVC5/Boilerplate.Web.Mvc5.Sample/Boilerplate.Web.Mvc5.Sample.csproj</PathToProject>
     </TemplateReference>
-    <TemplateReference Include="Boilerplate.AspNetCore.Sample.xproj">
-      <PathToProject>../MVC6/Boilerplate.AspNetCore.Sample/Boilerplate.AspNetCore.Sample.xproj</PathToProject>
+    <TemplateReference Include="MVC.csproj">
+      <PathToProject>../MVC6/MVC/MVC.csproj</PathToProject>
     </TemplateReference>
-    <!--<TemplateReference Include="Boilerplate.Web.Mvc6Api.Sample.xproj">
-      <PathToProject>../MVC6/Boilerplate.Web.Mvc6Api.Sample/Boilerplate.Web.Mvc6Api.Sample.xproj</PathToProject>
-    </TemplateReference>-->
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Core, Version=2.11.1.812, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NuGet.Core.2.11.1\lib\net40-Client\NuGet.Core.dll</HintPath>
+      <HintPath>..\..\packages\NuGet.Core.2.11.1\lib\net40-Client\NuGet.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TemplateBuilder, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\TemplateBuilder.1.1.4.9-beta\lib\TemplateBuilder.dll</HintPath>
+      <HintPath>..\..\packages\TemplateBuilder.1.1.5-beta\lib\TemplateBuilder.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Boilerplate.FeatureSelection.Client\Boilerplate.FeatureSelection.Client.csproj">
+      <Project>{9d90ca39-b283-4558-90e7-8ba2deac5efa}</Project>
+      <Name>Boilerplate.FeatureSelection.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Boilerplate.FeatureSelection\Boilerplate.FeatureSelection.csproj">
+      <Project>{81b33f2a-01a6-4aa6-a6f2-6e5ff2c0528f}</Project>
+      <Name>Boilerplate.FeatureSelection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Boilerplate.Wizard\Boilerplate.Wizard.csproj">
       <Project>{9cea6cb2-ddcf-4ab3-8b22-0383b3f529ef}</Project>
       <Name>Boilerplate.Wizard</Name>
