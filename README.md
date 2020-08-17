@@ -1,35 +1,56 @@
-![.NET Boxed Banner](https://raw.githubusercontent.com/Dotnet-Boxed/Templates/master/Images/Banner.png)
+![.NET Boxed Banner](Images/Banner.png)
 
-[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/munmh9if4vfeqy62?svg=true)](https://ci.appveyor.com/project/RehanSaeed/templates) [![Boilerplate.Templates NuGet Package](https://img.shields.io/nuget/v/Boxed.Templates.svg)](https://www.nuget.org/packages/Boxed.Templates/) [![Boxed.Templates MyGet Package](https://img.shields.io/myget/dotnet-boxed/vpre/Boxed.Templates.svg)](https://www.myget.org/feed/dotnet-boxed/package/nuget/Boxed.Templates) [![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/RehanSaeedUK) [![Twitter Follow](https://img.shields.io/twitter/follow/rehansaeeduk.svg?style=social&label=Follow)](https://twitter.com/RehanSaeedUK)
+ [![Boilerplate.Templates NuGet Package](https://img.shields.io/nuget/v/Boxed.Templates.svg)](https://www.nuget.org/packages/Boxed.Templates/) [![Boxed.Templates package in dotnet-boxed feed in Azure Artifacts](https://feeds.dev.azure.com/dotnet-boxed/_apis/public/Packaging/Feeds/03bd56a4-9269-43f7-9f75-d82037c56a46/Packages/d253caa8-4749-4cc9-892d-1342497a439e/Badge)](https://dev.azure.com/dotnet-boxed/Templates/_packaging?_a=package&feed=03bd56a4-9269-43f7-9f75-d82037c56a46&package=d253caa8-4749-4cc9-892d-1342497a439e&preferRelease=true) [![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/RehanSaeedUK) [![Twitter Follow](https://img.shields.io/twitter/follow/rehansaeeduk.svg?style=social&label=Follow)](https://twitter.com/RehanSaeedUK)
 
 Project templates with batteries included, providing the minimum amount of code required to get you going.
 
 ## Project Templates
 
-### [ASP.NET Core API Boxed](https://github.com/Dotnet-Boxed/Templates/blob/master/Docs/API.md)
-![ASP.NET Core API Boxed Preview Image](https://raw.githubusercontent.com/Dotnet-Boxed/Templates/master/Images/API-Preview.png)
-### [ASP.NET Core GraphQL Boxed](https://github.com/Dotnet-Boxed/Templates/blob/master/Docs/GraphQL.md)
-![ASP.NET Core GraphQL Boxed Preview Image](https://raw.githubusercontent.com/Dotnet-Boxed/Templates/master/Images/GraphQL-Preview.png)
+### [ASP.NET Core API Boxed](Docs/API.md)
+[![ASP.NET Core API Boxed Preview Image](Images/API-Preview.png)](Docs/API.md)
+
+### [ASP.NET Core GraphQL Boxed](Docs/GraphQL.md)
+[![ASP.NET Core GraphQL Boxed Preview Image](Images/GraphQL-Preview.png)](Docs/GraphQL.md)
+
+### [Microsoft Orleans Boxed](Docs/Orleans.md)
+[![Microsoft Orleans Boxed Preview Image](Images/Orleans-Preview.png)](Docs/Orleans.md)
+
+### [NuGet Package Boxed](Docs/NuGet.md)
+[![NuGet Package Boxed Preview Image](Images/NuGet-Preview.png)](Docs/NuGet.md)
+
+## Item Templates
+
+- `.editorconfig` - A very generic [.editorconfig](https://github.com/RehanSaeed/EditorConfig) file supporting .NET, C#, VB and web technologies.
+- `.gitattributes` - A [.gitattributes](https://rehansaeed.com/gitattributes-best-practices/) file supporting normalized line endings and Git Large File System (LFS).
 
 ## How can I get it?
 
 1. Install the latest [.NET Core SDK](https://dot.net).
-2. Run `dotnet new --install "Boxed.Templates::*"` to install the project template.
-3. Run `dotnet new api --help` to see how to select the feature of the project.
-5. Run `dotnet new api --name "MyTemplate"` along with any other custom options to create a project from the template.
+2. Run `dotnet new --install Boxed.Templates` to install the project templates.
+3. Choose a project template i.e. `api`, `graphql`, `nuget`, `orleans`.
+4. Run `dotnet new api --help` to see how to select the feature of the project.
+5. Run `dotnet new api --name "MyProject"` along with any other custom options to create a project from the template.
 
 ## Release Notes and To-Do List
 
 You can find release notes for each version [here](https://github.com/Dotnet-Boxed/Templates/releases) and a To-Do list of new features and enhancements coming soon in the [projects](https://github.com/Dotnet-Boxed/Templates/projects) tab.
 
-## Contributing
+## Continuous Integration
 
-Please read the [guide](https://github.com/Dotnet-Boxed/Templates/blob/master/CONTRIBUTING.md) to learn how you can make a contribution.
+| Name            | Operating System      | Status | History |
+| :---            | :---                  | :---   | :---    |
+| Azure Pipelines | Ubuntu                | [![Azure Pipelines Ubuntu Build Status](https://dev.azure.com/dotnet-boxed/Templates/_apis/build/status/Dotnet-Boxed.Templates?branchName=master&stageName=Build&jobName=Build&configuration=Build%20Linux)](https://dev.azure.com/dotnet-boxed/Templates/_build/latest?definitionId=2&branchName=master) | |
+| Azure Pipelines | Mac                   | [![Azure Pipelines Mac Build Status](https://dev.azure.com/dotnet-boxed/Templates/_apis/build/status/Dotnet-Boxed.Templates?branchName=master&stageName=Build&jobName=Build&configuration=Build%20Mac)](https://dev.azure.com/dotnet-boxed/Templates/_build/latest?definitionId=2&branchName=master) | |
+| Azure Pipelines | Windows               | [![Azure Pipelines Windows Build Status](https://dev.azure.com/dotnet-boxed/Templates/_apis/build/status/Dotnet-Boxed.Templates?branchName=master&stageName=Build&jobName=Build&configuration=Build%20Windows)](https://dev.azure.com/dotnet-boxed/Templates/_build/latest?definitionId=2&branchName=master) | |
+| Azure Pipelines | Overall               | [![Azure Pipelines Overall Build Status](https://dev.azure.com/dotnet-boxed/Templates/_apis/build/status/Dotnet-Boxed.Templates?branchName=master)](https://dev.azure.com/dotnet-boxed/Templates/_build/latest?definitionId=2&branchName=master) | [![Azure Pipelines Build History](https://buildstats.info/azurepipelines/chart/dotnet-boxed/Templates/2?branch=master&includeBuildsFromPullRequest=false)](https://dev.azure.com/dotnet-boxed/Templates/_build/latest?definitionId=2&branchName=master) |
+| GitHub Actions  | Ubuntu, Mac & Windows | [![GitHub Actions Status](https://github.com/Dotnet-Boxed/Templates/workflows/Build/badge.svg?branch=master)](https://github.com/Dotnet-Boxed/Templates/actions) | [![GitHub Actions Build History](https://buildstats.info/github/chart/Dotnet-Boxed/Templates?branch=master&includeBuildsFromPullRequest=false)](https://github.com/Dotnet-Boxed/Templates/actions) |
+| AppVeyor        | Ubuntu & Windows      | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/munmh9if4vfeqy62/branch/master?svg=true)](https://ci.appveyor.com/project/RehanSaeed/templates/branch/master) | [![AppVeyor Build History](https://buildstats.info/appveyor/chart/RehanSaeed/Templates?branch=master&includeBuildsFromPullRequest=false)](https://ci.appveyor.com/project/RehanSaeed/Templates) |
 
-## Thanks
+## Contributions and Thanks
 
-A big thank you to the following contributors:
+Please view the [Contributing](/.github/CONTRIBUTING.md) guide for more information.
 
+- [tomecho](https://github.com/tomecho) - Fixing GraphQL Apollo Tracing.
 - [sayedihashimi](https://github.com/sayedihashimi) - Fixed dotnet new command in ReadMe.
 - [bobinush](https://github.com/bobinush) - Fixed typo.
 - [chrisrichards](https://github.com/chrisrichards) - Fixed paging in the API template.

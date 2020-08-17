@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Build">
+    <PackageType>Template</PackageType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <Title>.NET Boxed Project &amp; Item Templates</Title>
+    <Authors>Muhammad Rehan Saeed (RehanSaeed.com)</Authors>
+    <Description>Project templates with batteries included, providing the minimum amount of code required to get you going.</Description>
+    <Copyright>Copyright © Muhammad Rehan Saeed. All rights Reserved</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Dotnet-Boxed/Templates</PackageProjectUrl>
+    <PackageIcon>Icon-256x256.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Dotnet-Boxed/Templates.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>.NET Boxed Muhammad Rehan Saeed API Swagger GraphQL Orleans</PackageTags>
+    <PackageReleaseNotes>https://github.com/Dotnet-Boxed/Templates/releases</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup Label="Package References">
+    <PackageReference Include="MinVer" PrivateAssets="all" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Files">
+    <Content Include="**\*" Exclude="**\bin\**\*;**\obj\**\*;**\.vs\**\*" />
+    <Compile Remove="**\*" />
+    <None Include="..\Images\Icon-256x256.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <Target Name="Versioning" BeforeTargets="MinVer">
+    <PropertyGroup Label="Build">
+      <MinVerDefaultPreReleasePhase>preview</MinVerDefaultPreReleasePhase>
+      <MinVerTagPrefix>$(PackageId).</MinVerTagPrefix>
+      <MinVerVerbosity>normal</MinVerVerbosity>
+    </PropertyGroup>
+  </Target>
+
+</Project>

@@ -1,40 +1,32 @@
 using System.Diagnostics;
-using System.Xml.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 var target = Argument("Target", "Default");
 var configuration =
     HasArgument("Configuration") ? Argument<string>("Configuration") :
-    EnvironmentVariable("Configuration") != null ? EnvironmentVariable("Configuration") :
+    EnvironmentVariable("Configuration") is object ? EnvironmentVariable("Configuration") :
     "Release";
-var mygetApiKey =
-    HasArgument("MyGetApiKey") ? Argument<string>("MyGetApiKey") :
-    EnvironmentVariable("MyGetApiKey") != null ? EnvironmentVariable("MyGetApiKey") :
+var template =
+    HasArgument("Template") ? Argument<string>("Template") :
+    EnvironmentVariable("Template") is object ? EnvironmentVariable("Template") :
     null;
-var preReleaseSuffix =
-    HasArgument("PreReleaseSuffix") ? Argument<string>("PreReleaseSuffix") :
-    (AppVeyor.IsRunningOnAppVeyor && AppVeyor.Environment.Repository.Tag.IsTag) ? null :
-    EnvironmentVariable("PreReleaseSuffix") != null ? EnvironmentVariable("PreReleaseSuffix") :
-    "beta";
-var buildNumber = HasArgument("BuildNumber") ?
-    Argument<int>("BuildNumber") :
-    AppVeyor.IsRunningOnAppVeyor ? AppVeyor.Environment.Build.Number :
-    EnvironmentVariable("BuildNumber") != null ? int.Parse(EnvironmentVariable("BuildNumber")) :
-    0;
 
-var artifactsDirectory = Directory("./Artifacts");
-var nuspecFile = GetFiles("./**/*.nuspec").First().ToString();
-var nuspecContent = string.Empty;
-var versionSuffix = string.IsNullOrEmpty(preReleaseSuffix) ? null : $"-{preReleaseSuffix}-{buildNumber:D4}";
+var artefactsDirectory = Directory("./Artefacts");
+var templatePackProject = Directory("./Source/*.csproj");
+var isDotnetRunEnabled = BuildSystem.IsLocalBuild || (!BuildSystem.IsLocalBuild && IsRunningOnWindows());
+var isDockerEnabled = BuildSystem.IsLocalBuild;
 
 Task("Clean")
+    .Description("Cleans the artefacts, bin and obj directories.")
     .Does(() =>
     {
-        CleanDirectory(artifactsDirectory);
+        CleanDirectory(artefactsDirectory);
         DeleteDirectories(GetDirectories("**/bin"), new DeleteDirectorySettings() { Force = true, Recursive = true });
         DeleteDirectories(GetDirectories("**/obj"), new DeleteDirectorySettings() { Force = true, Recursive = true });
     });
 
 Task("Restore")
+    .Description("Restores NuGet packages.")
     .IsDependentOn("Clean")
     .Does(() =>
     {
@@ -42,6 +34,7 @@ Task("Restore")
     });
 
  Task("Build")
+    .Description("Builds the solution.")
     .IsDependentOn("Restore")
     .Does(() =>
     {
@@ -50,70 +43,120 @@ Task("Restore")
             new DotNetCoreBuildSettings()
             {
                 Configuration = configuration,
-                NoRestore = true,
-                VersionSuffix = versionSuffix
+                NoRestore = true
             });
+    });
+
+Task("InstallDeveloperCertificate")
+    .Description("Installs a developer certificate using the dotnet dev-certs tool.")
+    .Does(() =>
+    {
+        if (isDotnetRunEnabled)
+        {
+            var certificateFilePath = System.IO.Path.ChangeExtension(System.IO.Path.GetTempFileName(), ".pfx");
+            try
+            {
+                StartProcess(
+                    "dotnet",
+                    new ProcessArgumentBuilder()
+                        .Append("dev-certs")
+                        .Append("https")
+                        .AppendSwitch("--export-path", certificateFilePath));
+
+                var certificate = new X509Certificate2(certificateFilePath);
+                using (var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
+                {
+                    store.Open(OpenFlags.ReadWrite);
+                    store.Add(certificate);
+                }
+                Information($"Dotnet developer certificate installed to local machine's root certificates.");
+            }
+            finally
+            {
+                if (System.IO.File.Exists(certificateFilePath))
+                {
+                    System.IO.File.Delete(certificateFilePath);
+                }
+            }
+        }
+        else
+        {
+            Information("This CI server does not support installing certificates");
+        }
     });
 
 Task("Test")
-    .IsDependentOn("Build")
-    .Does(() =>
+    .Description("Runs unit tests and outputs test results to the artefacts directory.")
+    .DoesForEach(GetFiles("./Tests/**/*.csproj"), project =>
     {
-        foreach(var project in GetFiles("./Tests/**/*.csproj"))
+        var filters = new List<string>();
+        if (!isDotnetRunEnabled)
         {
-            DotNetCoreTest(
-                project.ToString(),
-                new DotNetCoreTestSettings()
-                {
-                    Configuration = configuration,
-                    Logger = $"trx;LogFileName={project.GetFilenameWithoutExtension()}.trx",
-                    NoBuild = true,
-                    NoRestore = true,
-                    ResultsDirectory = artifactsDirectory
-                });
+            filters.Add("IsUsingDotnetRun=false");
         }
-    });
 
-Task("Version")
-    .IsDependentOn("Test")
-    .Does(() =>
-    {
-        nuspecContent = System.IO.File.ReadAllText(nuspecFile);
-        var nuspecDocument = XDocument.Parse(nuspecContent);
-        var ns = XNamespace.Get("http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd");
-        var versionElement = nuspecDocument.Element(ns + "package").Element(ns + "metadata").Element(ns + "version");
-        versionElement.Value = versionElement.Value.Replace("-*", versionSuffix);
-        System.IO.File.WriteAllText(nuspecFile, nuspecDocument.ToString());
-        Information($"VersionSuffix set to {versionSuffix}");
+        if (!isDockerEnabled)
+        {
+            filters.Add("IsUsingDocker=false");
+        }
+
+        if (template != null)
+        {
+            filters.Add($"Template={template}");
+        }
+
+        DotNetCoreTest(
+            project.ToString(),
+            new DotNetCoreTestSettings()
+            {
+                Configuration = configuration,
+                Filter = string.Join("&", filters),
+                Logger = $"trx;LogFileName={project.GetFilenameWithoutExtension()}.trx",
+                NoBuild = true,
+                NoRestore = true,
+                ResultsDirectory = artefactsDirectory,
+                ArgumentCustomization = x => x
+                    .Append("--blame")
+                    .AppendSwitch("--logger", $"html;LogFileName={project.GetFilenameWithoutExtension()}.html")
+                    .Append("--collect:\"XPlat Code Coverage\""),
+            });
     });
 
 Task("Pack")
-    .IsDependentOn("Version")
+    .Description("Creates NuGet packages and outputs them to the artefacts directory.")
     .Does(() =>
     {
-        NuGetPack(
-            nuspecFile,
-            new NuGetPackSettings()
+        DotNetCorePack(
+            GetFiles(templatePackProject).Single().ToString(),
+            new DotNetCorePackSettings()
             {
-                OutputDirectory = artifactsDirectory
+                Configuration = configuration,
+                NoBuild = true,
+                NoRestore = true,
+                OutputDirectory = artefactsDirectory,
             });
-        System.IO.File.WriteAllText(nuspecFile, nuspecContent);
     });
 
 Task("Default")
+    .Description("Cleans, restores NuGet packages, builds the solution, runs unit tests and then creates NuGet packages.")
+    .IsDependentOn("Build")
+    .IsDependentOn("Test")
     .IsDependentOn("Pack");
 
-Teardown(context =>
-{
-    // Appveyor is failing to exit the cake script.
-    if (AppVeyor.IsRunningOnAppVeyor)
-    {
-        foreach (var process in Process.GetProcessesByName("dotnet"))
-        {
-            process.Kill();
-        }
-    }
-});
-
-
 RunTarget(target);
+
+public void StartProcess(string processName, ProcessArgumentBuilder builder)
+{
+    var command = $"{processName} {builder.RenderSafe()}";
+    Information($"Executing: {command}");
+    var exitCode = StartProcess(
+        processName,
+        new ProcessSettings()
+        {
+            Arguments = builder
+        });
+    if (exitCode != 0 && !AzurePipelines.IsRunningOnAzurePipelinesHosted)
+    {
+        throw new Exception($"'{command}' failed with exit code {exitCode}.");
+    }
+}

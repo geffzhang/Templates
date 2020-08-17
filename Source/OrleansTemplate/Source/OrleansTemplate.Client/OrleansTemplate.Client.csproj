@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--#if (AuthoringMode)-->
+  <PropertyGroup>
+    <!-- Modify these constants to enable/disable a feature to debug the template. Note that this only affects the C#. -->
+    <DefineConstants>$(DefineConstants);TLS</DefineConstants>
+    <!-- Workaround to build this project: https://github.com/dotnet/templating/issues/1438 -->
+    <TLS>true</TLS>
+  </PropertyGroup>
+  <!--#endif-->
+
+  <PropertyGroup Label="Build">
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup Label="Package References">
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Orleans.Client" Version="3.2.2" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="3.2.2" />
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" PrivateAssets="all" Version="3.2.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Orleans.Connections.Security" Version="3.2.2" Condition="'$(TLS)' == 'true'" />
+  </ItemGroup>
+
+  <ItemGroup Label="Project References">
+    <ProjectReference Include="..\OrleansTemplate.Abstractions\OrleansTemplate.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

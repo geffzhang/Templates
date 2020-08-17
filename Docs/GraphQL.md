@@ -1,16 +1,18 @@
-![.NET Boxed Banner](https://raw.githubusercontent.com/Dotnet-Boxed/Templates/master/Images/Banner.png)
+![.NET Boxed Banner](../Images/Banner.png)
 
-![ASP.NET Core GraphQL Boxed Preview Image](https://raw.githubusercontent.com/Dotnet-Boxed/Templates/master/Images/GraphQL-Preview.png)
+![ASP.NET Core GraphQL Boxed Preview Image 1](../Images/GraphQL-Preview.png)
+
+![ASP.NET Core GraphQL Boxed Preview Image 2](../Images/GraphQL-Voyager-Preview.gif)
 
 ## Technology Map
 
 The ASP.NET Core GraphQL project template contains the following features:
 
-![ASP.NET Core GraphQL Boxed Technology Map](https://raw.githubusercontent.com/Dotnet-Boxed/Templates/master/Images/GraphQL-Technology-Map.png)
+![ASP.NET Core GraphQL Boxed Technology Map](../Images/GraphQL-Technology-Map.png)
 
 ## Optional Feature Selection
 
-The ASP.NET Core GraphQL project template uses `dotnet new` to enable you to turn features of the project template on or off. Literally everything can be turned on or off with the click of a button for a truly personalized project. Find out more about `dotnet new` [here](http://rehansaeed.com/custom-project-templates-using-dotnet-new/).
+The ASP.NET Core GraphQL project template uses `dotnet new` to enable you to turn features of the project template on or off. Find out more about `dotnet new` [here](http://rehansaeed.com/custom-project-templates-using-dotnet-new/).
 
 #### GraphQL
 
@@ -22,9 +24,24 @@ The ASP.NET Core GraphQL project template uses `dotnet new` to enable you to tur
 - **Title** - The name of the project which determines the assembly product name.
 - **Description** - A description of the project which determines the assembly description.
 - **Author** - The name of the author of the project which determines the assembly author and copyright information.
+- **Contact** - The contact details to use if someone wants to contact you about a security vulnerability or code of conduct issues.
+- **EditorConfig** - Add a .editorconfig file to set a fixed code style.
+- **ReadMe** - Add a README.md markdown file describing the project.
 - **TreatWarningsAsErrors** - Treat warnings as errors.
 - **HttpPort** - Port number to use for the HTTP endpoint in launchSettings.json.
 - **HttpsPort** - Port number to use for the HTTPS endpoint in launchSettings.json.
+
+#### Source Control
+
+- **SourceControl** - Select which source control provider you are using if any, to add provider specific features.
+  - **GitHub** (Default) - Adds .github directory containing a code of conduct, contributing guide, pull request template and issue templates.
+  - **None** - No source control provider is being used.
+- **GitHubUsername** - Your GitHub username or organisation name that the project lives under.
+- **GitHubProject** - The name of your GitHub project.
+
+#### Continuous Integration (CI)
+
+- **GitHubActions** (Default=On) - Adds GitHub Actions continuous integration and automatic release drafting.
 
 #### Performance
 
@@ -51,7 +68,6 @@ The ASP.NET Core GraphQL project template uses `dotnet new` to enable you to tur
 #### Analytics
 
 - **HealthCheck** (Default=On) - A health-check endpoint that returns the status of this API and its dependencies, giving an indication of its health.
-- **CorrelationId** (Default=On) - Correlate requests between clients and this API. Pass a GUID in the X-Correlation-ID HTTP header to set the HttpContext.TraceIdentifier. The header is also reflected back in a response.
 - **Analytics** - Monitor internal information about how your application is running, as well as external user information.
   - **Application Insights** - Monitor internal information about how your application is running, as well as external user information using the Microsoft Azure cloud.
   - **None** (Default) - Not using any analytics.
@@ -63,8 +79,13 @@ The ASP.NET Core GraphQL project template uses `dotnet new` to enable you to tur
   - **Azure** - The Microsoft Azure cloud. Adds logging features that let you see logs in the Azure portal.
   - **None** (Default) - No cloud provider is being used.
 
+#### Tests
+
+- **IntegrationTest** - Adds an integration test project.
+
 #### Other
 
+- **Docker** (Default=On) - Adds an optimised Dockerfile to add the ability build a Docker image.
 - **robots.txt** (Default=On) - Adds a robots.txt file to tell search engines not to index this site.
 - **humans.txt** (Default=On) - Adds a humans.txt file where you can tell the world who wrote the application. This file is a good place to thank your developers.
 
@@ -80,6 +101,7 @@ The ASP.NET Core GraphQL project template uses `dotnet new` to enable you to tur
 
 - **Caching Static Files** - Static files are cached by default using the `Cache-Control` HTTP header.
 - **AddMvcCore** - Uses only the features and packages from ASP.NET Core required for [GraphQL](http://graphql.org/).
+- **Server Timing** - Adds the [`Server-Timing` HTTP header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server-Timing) to responses, so browser developer tools can show how long the server took to respond.
 
 #### Security
 
@@ -102,13 +124,13 @@ The ASP.NET Core GraphQL project template uses `dotnet new` to enable you to tur
 ## How can I get it?
 
 1. Install the latest [.NET Core SDK](https://dot.net).
-2. Run `dotnet new --install "Boxed.Templates::*"` to install the project template.
-3. Run `dotnet new api --help` to see how to select the feature of the project.
-5. Run `dotnet new api --name "MyTemplate"` along with any other custom options to create a project from the template.
+2. Run `dotnet new --install Boxed.Templates` to install the project template.
+3. Run `dotnet new graphql --help` to see how to select the feature of the project.
+5. Run `dotnet new graphql --name "MyProject"` along with any other custom options to create a project from the template.
 
 ## Release Notes and To-Do List
 You can find release notes for each version [here](https://github.com/Dotnet-Boxed/Templates/releases) and a To-Do list of new features and enhancements coming soon in the [projects](https://github.com/Dotnet-Boxed/Templates/projects) tab.
 
 ## Contributing
 
-Please read the [guide](https://github.com/Dotnet-Boxed/Templates/blob/master/CONTRIBUTING.md) to learn how you can make a contribution.
+Please view the [Contributing](/.github/CONTRIBUTING.md) guide for more information.

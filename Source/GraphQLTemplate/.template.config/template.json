@@ -1,0 +1,690 @@
+// https://github.com/dotnet/templating/wiki/%22Runnable-Project%22-Templates#configuration
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Muhammad Rehan Saeed (RehanSaeed.com)",
+  "classifications": [ "Web", "WebAPI", "Boxed", "GraphQL", "API" ],
+  "name": "ASP.NET Core GraphQL Boxed",
+  "groupIdentity": "Dotnet.Boxed.GraphQL",
+  "identity": "Dotnet.Boxed.GraphQL.CSharp",
+  "shortName": "graphql",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "GraphQLTemplate",
+  "preferNameDirectory": true,
+  "guids": [
+    // User Secret ID
+    "113f2d04-69f0-40c3-8797-ba3f356dd812"
+  ],
+  "primaryOutputs": [
+    { "path": "GraphQLTemplate.sln" }
+  ],
+  "sources": [
+    {
+      "modifiers": [
+        // EditorConfig
+        {
+          "condition": "(!EditorConfig)",
+          "exclude": [
+            ".editorconfig"
+          ]
+        },
+        // GitHub
+        {
+          "condition": "(!GitHub)",
+          "exclude": [
+            ".github/ISSUE_TEMPLATE/**/*",
+            ".github/CODE_OF_CONDUCT.md",
+            ".github/CONTRIBUTING.md",
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            ".github/SECURITY.md"
+          ]
+        },
+        // ReadMe
+        {
+          "condition": "(!ReadMe)",
+          "exclude": [
+            "README.md"
+          ]
+        },
+        // Mutations
+        {
+          "condition": "(!Mutations)",
+          "exclude": [
+            "Source/GraphQLTemplate/Schemas/RootMutation.cs"
+          ]
+        },
+        // Subscriptions
+        {
+          "condition": "(!Subscriptions)",
+          "exclude": [
+            "Source/GraphQLTemplate/Schemas/RootSubscription.cs"
+          ]
+        },
+        // ReverseProxyWebServer
+        {
+          "condition": "(!IIS)",
+          "exclude": [
+            "Source/GraphQLTemplate/web.config"
+          ]
+        },
+        {
+          "condition": "(!NGINX)",
+          "exclude": [
+            "Source/GraphQLTemplate/mime.types",
+            "Source/GraphQLTemplate/nginx.conf"
+          ]
+        },
+        // Authorization
+        {
+          "condition": "(!Authorization)",
+          "exclude": [
+            "Source/GraphQLTemplate/Constants/AuthorizationPolicyName.cs"
+          ]
+        },
+        // CORS
+        {
+          "condition": "(!CORS)",
+          "exclude": [
+            "Source/GraphQLTemplate/Constants/CorsPolicyName.cs"
+          ]
+        },
+        // ResponseCompression
+        {
+          "condition": "(!ResponseCompression)",
+          "exclude": [
+            "Source/GraphQLTemplate/Options/CompressionOptions.cs"
+          ]
+        },
+        // RobotsTxt
+        {
+          "condition": "(!RobotsTxt)",
+          "exclude": [
+            "Source/GraphQLTemplate/wwwroot/robots.txt"
+          ]
+        },
+        // SecurityTxt
+        {
+          "condition": "(!SecurityTxt)",
+          "exclude": [
+            "Source/GraphQLTemplate/wwwroot/.well-known/security.txt"
+          ]
+        },
+        // HumansTxt
+        {
+          "condition": "(!HumansTxt)",
+          "exclude": [
+            "Source/GraphQLTemplate/wwwroot/humans.txt"
+          ]
+        },
+        // HealthCheck
+        {
+          "condition": "(!HealthCheck)",
+          "exclude": [
+            "Tests/GraphQLTemplate.IntegrationTest/HealthCheckTest.cs"
+          ]
+        },
+        // IntegrationTest
+        {
+          "condition": "(!IntegrationTest)",
+          "exclude": [
+            "Tests/ApiTemplate.IntegrationTest/**/*"
+          ]
+        },
+        // Docker
+        {
+          "condition": "(!Docker)",
+          "exclude": [
+            "Source/GraphQLTemplate/Dockerfile",
+            ".dockerignore"
+          ]
+        },
+        // GitHubActions
+        {
+          "condition": "(!GitHubActions)",
+          "exclude": [
+            ".github/workflows/build.yml",
+            ".github/workflows/release-drafter.yml",
+            ".github/release-drafter.yml"
+          ]
+        }
+      ]
+    }
+  ],
+  "symbols": {
+    // Title
+    "Title": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Project Title",
+      "replaces": "PROJECT-TITLE",
+      "description": "The name of the project which determines the assembly product name."
+    },
+    "TitleXmlEncoded": {
+      "type": "derived",
+      "replaces": "PROJECT-TITLE-XML",
+      "valueSource": "Title",
+      "valueTransform": "xmlEncode"
+    },
+    // Description
+    "Description": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Project Description",
+      "replaces": "PROJECT-DESCRIPTION",
+      "description": "A description of the project which determines the assembly description."
+    },
+    "DescriptionXmlEncoded": {
+      "type": "derived",
+      "replaces": "PROJECT-DESCRIPTION-XML",
+      "valueSource": "Description",
+      "valueTransform": "xmlEncode"
+    },
+    // Author
+    "Author": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Project Author",
+      "replaces": "PROJECT-AUTHOR",
+      "description": "The name of the author of the project which determines the assembly author, company and copyright information."
+    },
+    "AuthorXmlEncoded": {
+      "type": "derived",
+      "replaces": "PROJECT-AUTHOR-XML",
+      "valueSource": "Author",
+      "valueTransform": "xmlEncode"
+    },
+    // Contact
+    "Contact": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "[user@example.com|@ExampleUser]",
+      "replaces": "PROJECT-CONTACT",
+      "description": "The contact details to use if someone wants to contact you about a security vulnerability or code of conduct issues."
+    },
+    "ContactXmlEncoded": {
+      "type": "derived",
+      "replaces": "PROJECT-CONTACT-XML",
+      "valueSource": "Contact",
+      "valueTransform": "xmlEncode"
+    },
+    // EditorConfig
+    "EditorConfig": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Add a .editorconfig file to set a fixed code style."
+    },
+    // SourceControl
+    "SourceControl": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "GitHub",
+          "description": "Adds a .github directory containing a code of conduct, contributing guide, pull request template and issue templates."
+        },
+        {
+          "choice": "None",
+          "description": "No source control provider is being used."
+        }
+      ],
+      "defaultValue": "GitHub",
+      "description": "Select which source control provider you are using if any, to add provider specific features."
+    },
+    "GitHub": {
+      "type": "computed",
+      "value": "(SourceControl == \"GitHub\")"
+    },
+    // GitHubUsername
+    "GitHubUsername": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Username",
+      "replaces": "GITHUB-USERNAME",
+      "description": "Your GitHub username or organisation name that the project lives under."
+    },
+    // GitHubProject
+    "GitHubProject": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Project",
+      "replaces": "GITHUB-PROJECT",
+      "description": "The name of your GitHub project."
+    },
+    // ReadMe
+    "ReadMe": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Add a README.md markdown file describing the project."
+    },
+    // TreatWarningsAsErrors
+    "TreatWarningsAsErrors": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Treat warnings as errors."
+    },
+
+    // Mutations
+    "Mutations": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Add GraphQL mutations to change objects."
+    },
+    // Subscriptions
+    "Subscriptions": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Add GraphQL subscriptions to be notified when objects change."
+    },
+    // Forwarded Headers
+    "ForwardedHeaders": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "If you use a load balancer, updates the request host and scheme using the X-Forwarded-Host and X-Forwarded-Proto HTTP headers."
+    },
+    // Host Filtering
+    "HostFiltering": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "A white-list of host names allowed by the Kestrel web server e.g. example.com. You don't need this if you are using a properly configured reverse proxy."
+    },
+    // ReverseProxyWebServer
+    "ReverseProxyWebServer": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "None",
+          "description": "Use Kestrel directly instead of a reverse proxy."
+        },
+        {
+          "choice": "IIS",
+          "description": "A flexible, secure and manageable Web server for hosting anything on the Web using Windows Server. Select this option if you are deploying your site to Azure web apps."
+        },
+        {
+          "choice": "NGINX",
+          "description": "A free, open-source, cross-platform high-performance HTTP server and reverse proxy."
+        },
+        {
+          "choice": "Both",
+          "description": "Support both reverse proxy web servers."
+        }
+      ],
+      "defaultValue": "Both",
+      "description": "The internet facing reverse proxy web server you want to use in front of the primary web server to host the site."
+    },
+    "IIS": {
+      "type": "computed",
+      "value": "(ReverseProxyWebServer == \"IIS\" || ReverseProxyWebServer == \"Both\")"
+    },
+    "NGINX": {
+      "type": "computed",
+      "value": "(ReverseProxyWebServer == \"NGINX\" || ReverseProxyWebServer == \"Both\")"
+    },
+    // CloudProvider
+    "CloudProvider": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "Azure",
+          "description": "The Microsoft Azure cloud. Adds logging features that let you see logs in the Azure portal."
+        },
+        {
+          "choice": "None",
+          "description": "No cloud provider is being used."
+        }
+      ],
+      "defaultValue": "None",
+      "description": "Select which cloud provider you are using if any, to add cloud specific features."
+    },
+    "Azure": {
+      "type": "computed",
+      "value": "(CloudProvider == \"Azure\")"
+    },
+    // Analytics
+    "Analytics": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "Application Insights",
+          "description": "Monitor internal information about how your application is running, as well as external user information using the Microsoft Azure cloud."
+        },
+        {
+          "choice": "None",
+          "description": "Not using any analytics."
+        }
+      ],
+      "defaultValue": "None",
+      "description": "Monitor internal information about how your application is running, as well as external user information."
+    },
+    "ApplicationInsights": {
+      "type": "computed",
+      "value": "(Analytics == \"Application Insights\")"
+    },
+    // ApplicationInsightsKey
+    "ApplicationInsightsKey": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "APPLICATION-INSIGHTS-INSTRUMENTATION-KEY",
+      "description": "Your Application Insights instrumentation key e.g. 11111111-2222-3333-4444-555555555555."
+    },
+    // HttpsEverywhere
+    "HttpsEverywhere": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Use the HTTPS scheme and TLS security across the entire site, redirects HTTP to HTTPS and adds a Strict Transport Security (HSTS) HTTP header with preloading enabled."
+    },
+    // HstsPreload
+    "HstsPreload": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Enable Strict Transport Security (HSTS) HTTP header with preloading."
+    },
+    // Authorization
+    "Authorization": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Enable the use of authorization policies to secure GraphQL types and fields by requiring certain claims. You need to setup authentication yourself."
+    },
+    // CORS
+    "CORS": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Browser security prevents a web page from making AJAX requests to another domain."
+    },
+    // ResponseCompression
+    "ResponseCompression": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Enables dynamic GZIP response compression of HTTP responses. Not enabled for HTTPS to avoid the BREACH security vulnerability."
+    },
+    // HealthCheck
+    "HealthCheck": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "A health-check endpoint that returns the status of this API and its dependencies, giving an indication of its health."
+    },
+    // RobotsTxt
+    "RobotsTxt": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Adds a robots.txt file to tell search engines not to index this site."
+    },
+    // SecurityTxt
+    "SecurityTxt": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Adds a security.txt file to allow people to contact you if they find a security vulnerability."
+    },
+    // HumansTxt
+    "HumansTxt": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Adds a humans.txt file where you can tell the world who wrote the application. This file is a good place to thank your developers."
+    },
+    // HttpPort
+    "HttpPort": {
+      "type": "parameter",
+      "datatype": "integer",
+      "description": "Port number to use for the HTTP endpoint in launchSettings.json."
+    },
+    "HttpPortGenerated": {
+      "type": "generated",
+      "generator": "port"
+    },
+    "HttpPortReplacer": {
+      "type": "generated",
+      "generator": "coalesce",
+      "parameters": {
+        "sourceVariableName": "HttpPort",
+        "fallbackVariableName": "HttpPortGenerated"
+      },
+      "replaces": "43300"
+    },
+    // HttpsPort
+    "HttpsPort": {
+      "type": "parameter",
+      "datatype": "integer",
+      "description": "Port number to use for the HTTPS endpoint in launchSettings.json."
+    },
+    "HttpsPortGenerated": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 44300,
+        "high": 44399
+      }
+    },
+    "HttpsPortReplacer": {
+      "type": "generated",
+      "generator": "coalesce",
+      "parameters": {
+        "sourceVariableName": "HttpsPort",
+        "fallbackVariableName": "HttpsPortGenerated"
+      },
+      "replaces": "44300"
+    },
+    "IntegrationTest": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Adds an integration test project.",
+      "defaultValue": "true"
+    },
+    "StyleCop": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Adds and enforces StyleCop analysers. NOTE: You may need to sort using statements if you enable this due to limitations in the dotnet new templating engine.",
+      "defaultValue": "false"
+    },
+    "Docker": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Adds an optimised Dockerfile to add the ability build a Docker image.",
+      "defaultValue": "true"
+    },
+    // GitHubActions
+    "GitHubActions": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Adds GitHub Actions continuous integration and automatic release drafting.",
+      "defaultValue": "true"
+    },
+
+    // AuthoringMode
+    "AuthoringMode": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": {
+        "value": false
+      }
+    },
+    // https://github.com/dotnet/templating/wiki/Post-Action-Registry
+    "SkipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Skips the execution of 'dotnet restore' on project creation.",
+      "defaultValue": "false"
+    },
+    "SkipOpenToDo": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Skips opening the to-do list for the project in a web browser.",
+      "defaultValue": "false"
+    }
+  },
+  "SpecialCustomOperations": {
+    "**/*.md": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "actionableIf": [ "<!--#if" ],
+            "actionableElse": [ "#else", "<!--#else" ],
+            "actionableElseif": [ "#elseif", "<!--#elseif", "#elif", "<!--#elif" ],
+            "endif": [ "#endif", "<!--#endif" ],
+            "trim": "true",
+            "wholeLine": "true",
+            "actions": [ "fixPseudoNestedComments" ]
+          }
+        },
+        {
+          "type": "balancednesting",
+          "configuration": {
+            "id": "fixPseudoNestedComments",
+            "startToken": "<!--",
+            "realEndToken": "-->",
+            "pseudoEndToken": "-- >",
+            "resetFlag": "_TestResetFlag_"
+          }
+        }
+      ]
+    },
+    "**/.editorconfig": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif" ],
+            "endif": [ "#endif" ],
+            "actionableIf": [ "##if" ],
+            "actionableElse": [ "##else" ],
+            "actionableElseif": [ "##elseif" ],
+            "actions": [ "uncomment", "reduceComment" ],
+            "trim": "true",
+            "wholeLine": "true",
+            "evaluator": "C++"
+          }
+        },
+        {
+          "type": "replacement",
+          "configuration": {
+            "original": "#",
+            "replacement": "",
+            "id": "uncomment"
+          }
+        },
+        {
+          "type": "replacement",
+          "configuration": {
+            "original": "##",
+            "replacement": "#",
+            "id": "reduceComment"
+          }
+        }
+      ]
+    },
+    "**/Dockerfile": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif" ],
+            "endif": [ "#endif" ],
+            "actionableIf": [ "##if" ],
+            "actionableElse": [ "##else" ],
+            "actionableElseif": [ "##elseif" ],
+            "actions": [ "uncomment", "reduceComment" ],
+            "trim": "true",
+            "wholeLine": "true",
+            "evaluator": "C++"
+          }
+        },
+        {
+          "type": "replacement",
+          "configuration": {
+            "original": "#",
+            "replacement": "",
+            "id": "uncomment"
+          }
+        },
+        {
+          "type": "replacement",
+          "configuration": {
+            "original": "##",
+            "replacement": "#",
+            "id": "reduceComment"
+          }
+        }
+      ]
+    },
+    "**/*.yml": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif" ],
+            "endif": [ "#endif" ],
+            "actionableIf": [ "##if" ],
+            "actionableElse": [ "##else" ],
+            "actionableElseif": [ "##elseif" ],
+            "actions": [ "uncomment", "reduceComment" ],
+            "trim": "true",
+            "wholeLine": "true",
+            "evaluator": "C++"
+          }
+        },
+        {
+          "type": "replacement",
+          "configuration": {
+            "original": "#",
+            "replacement": "",
+            "id": "uncomment"
+          }
+        },
+        {
+          "type": "replacement",
+          "configuration": {
+            "original": "##",
+            "replacement": "#",
+            "id": "reduceComment"
+          }
+        }
+      ]
+    }
+  },
+  "postActions": [
+    {
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "condition": "(!SkipRestore)",
+      "continueOnError": true,
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        { "text": "Run 'dotnet restore' in the directory the template was created in." }
+      ]
+    },
+    {
+      "actionId": "FEA7469E-E2E7-4431-B86B-27EBC1744883",
+      "condition": "(!SkipOpenToDo)",
+      "continueOnError": true,
+      "description": "Open the to-do list for the project in a web browser.",
+      "manualInstructions": [
+        { "text": "Open the TODO.html in a web browser to see a to-do list." }
+      ]
+    }
+  ]
+}
