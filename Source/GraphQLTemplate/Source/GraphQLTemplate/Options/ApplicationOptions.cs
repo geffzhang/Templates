@@ -1,7 +1,6 @@
 namespace GraphQLTemplate.Options
 {
     using System.ComponentModel.DataAnnotations;
-    using GraphQL.Server;
 #if ForwardedHeaders
     using Microsoft.AspNetCore.Builder;
 #elif HostFiltering
@@ -20,22 +19,26 @@ namespace GraphQLTemplate.Options
         public CacheProfileOptions CacheProfiles { get; }
 
 #if ResponseCompression
-        public CompressionOptions Compression { get; set; }
+        public CompressionOptions Compression { get; set; } = default!;
 
 #endif
 #if ForwardedHeaders
         [Required]
-        public ForwardedHeadersOptions ForwardedHeaders { get; set; }
+        public ForwardedHeadersOptions ForwardedHeaders { get; set; } = default!;
 
 #elif HostFiltering
         [Required]
-        public HostFilteringOptions HostFiltering { get; set; }
+        public HostFilteringOptions HostFiltering { get; set; } = default!;
 
 #endif
         [Required]
-        public GraphQLOptions GraphQL { get; set; }
+        public GraphQLOptions GraphQL { get; set; } = default!;
+
+        public KestrelServerOptions Kestrel { get; set; } = default!;
+#if Redis
 
         [Required]
-        public KestrelServerOptions Kestrel { get; set; }
+        public RedisOptions Redis { get; set; } = default!;
+#endif
     }
 }

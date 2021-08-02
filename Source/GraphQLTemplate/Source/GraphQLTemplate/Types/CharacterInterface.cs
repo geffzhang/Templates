@@ -1,25 +1,30 @@
 namespace GraphQLTemplate.Types
 {
-    using GraphQL.Types;
     using GraphQLTemplate.Models;
+    using HotChocolate.Types;
 
-    public class CharacterInterface : InterfaceGraphType<Character>
+    public class CharacterInterface : InterfaceType<Character>
     {
-        public CharacterInterface()
+        protected override void Configure(IInterfaceTypeDescriptor<Character> descriptor)
         {
-            this.Name = "Character";
-            this.Description = "A character from the Star Wars universe";
+            descriptor
+                .Name("Character")
+                .Description("A character from the Star Wars universe");
 
-            this.Field(x => x.Id, type: typeof(NonNullGraphType<IdGraphType>))
+            descriptor
+                .Field(x => x.Id)
+                .Type<NonNullType<IdType>>()
                 .Description("The unique identifier of the character.");
-            this.Field(x => x.Name, nullable: true)
+            descriptor
+                .Field(x => x.Name)
                 .Description("The name of the character.");
-            this.Field(x => x.AppearsIn, type: typeof(ListGraphType<EpisodeEnumeration>))
+            descriptor
+                .Field(x => x.AppearsIn)
                 .Description("Which movie they appear in.");
-
-            this.Field<ListGraphType<CharacterInterface>>(
-                nameof(Character.Friends),
-                "The friends of the character, or an empty list if they have none.");
+            descriptor
+                .Field(x => x.Friends)
+                .Type<NonNullType<ListType<NonNullType<CharacterInterface>>>>()
+                .Description("The friends of the character, or an empty list if they have none.");
         }
     }
 }

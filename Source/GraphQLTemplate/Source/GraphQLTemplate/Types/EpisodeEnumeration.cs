@@ -1,18 +1,19 @@
 namespace GraphQLTemplate.Types
 {
-    using GraphQL.Types;
     using GraphQLTemplate.Models;
+    using HotChocolate.Types;
 
-    public class EpisodeEnumeration : EnumerationGraphType<Episode>
+    public class EpisodeEnumeration : EnumType<Episode>
     {
-        public EpisodeEnumeration()
+        protected override void Configure(IEnumTypeDescriptor<Episode> descriptor)
         {
-            this.Name = "Episode";
-            this.Description = "One of the films in the Star Wars Trilogy.";
+            descriptor
+                .Name("Episode")
+                .Description("One of the films in the Star Wars Trilogy.");
 
-            this.AddValue("NEWHOPE", "Released in 1977.", 4);
-            this.AddValue("EMPIRE", "Released in 1980.", 5);
-            this.AddValue("JEDI", "Released in 1983.", 6);
+            descriptor.Value(Episode.NEWHOPE).Description("Released in 1977.");
+            descriptor.Value(Episode.EMPIRE).Description("Released in 1980.");
+            descriptor.Value(Episode.JEDI).Description("Released in 1983.");
         }
     }
 }

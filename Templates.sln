@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.352
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{4CE320D7-3C4E-4E1F-8E51-411684C7CE2A}"
 EndProject
@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".template.config", ".templa
 	ProjectSection(SolutionItems) = preProject
 		Source\OrleansTemplate\.template.config\dotnetcli.host.json = Source\OrleansTemplate\.template.config\dotnetcli.host.json
 		Source\OrleansTemplate\.template.config\icon.png = Source\OrleansTemplate\.template.config\icon.png
+		Source\OrleansTemplate\.template.config\ide.host.json = Source\OrleansTemplate\.template.config\ide.host.json
 		Source\OrleansTemplate\.template.config\template.json = Source\OrleansTemplate\.template.config\template.json
 	EndProjectSection
 EndProject
@@ -66,6 +67,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".template.config", ".templa
 	ProjectSection(SolutionItems) = preProject
 		Source\ApiTemplate\.template.config\dotnetcli.host.json = Source\ApiTemplate\.template.config\dotnetcli.host.json
 		Source\ApiTemplate\.template.config\icon.png = Source\ApiTemplate\.template.config\icon.png
+		Source\ApiTemplate\.template.config\ide.host.json = Source\ApiTemplate\.template.config\ide.host.json
 		Source\ApiTemplate\.template.config\template.json = Source\ApiTemplate\.template.config\template.json
 	EndProjectSection
 EndProject
@@ -73,6 +75,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".template.config", ".templa
 	ProjectSection(SolutionItems) = preProject
 		Source\GraphQLTemplate\.template.config\dotnetcli.host.json = Source\GraphQLTemplate\.template.config\dotnetcli.host.json
 		Source\GraphQLTemplate\.template.config\icon.png = Source\GraphQLTemplate\.template.config\icon.png
+		Source\GraphQLTemplate\.template.config\ide.host.json = Source\GraphQLTemplate\.template.config\ide.host.json
 		Source\GraphQLTemplate\.template.config\template.json = Source\GraphQLTemplate\.template.config\template.json
 	EndProjectSection
 EndProject
@@ -91,15 +94,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		dotnet-tools.json = dotnet-tools.json
 		global.json = global.json
 		Key.snk = Key.snk
+		nuget.config = nuget.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boxed.Templates", "Source\Boxed.Templates.csproj", "{7B294041-5B26-4B32-B084-05CCD35A89B4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEMPLATE", "{EC645147-507B-4210-9152-5159DBC8A062}"
 	ProjectSection(SolutionItems) = preProject
-		.github\ISSUE_TEMPLATE\BUG_REPORT.md = .github\ISSUE_TEMPLATE\BUG_REPORT.md
-		.github\ISSUE_TEMPLATE\FEATURE_REQUEST.md = .github\ISSUE_TEMPLATE\FEATURE_REQUEST.md
-		.github\ISSUE_TEMPLATE\QUESTION.md = .github\ISSUE_TEMPLATE\QUESTION.md
+		.github\ISSUE_TEMPLATE\BUG_REPORT.yml = .github\ISSUE_TEMPLATE\BUG_REPORT.yml
+		.github\ISSUE_TEMPLATE\FEATURE_REQUEST.yml = .github\ISSUE_TEMPLATE\FEATURE_REQUEST.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{BF3053CB-9A64-4062-A69F-C67D0A2C2902}"
@@ -117,6 +120,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".template.config", ".templa
 	ProjectSection(SolutionItems) = preProject
 		Source\NuGetTemplate\.template.config\dotnetcli.host.json = Source\NuGetTemplate\.template.config\dotnetcli.host.json
 		Source\NuGetTemplate\.template.config\icon.png = Source\NuGetTemplate\.template.config\icon.png
+		Source\NuGetTemplate\.template.config\ide.host.json = Source\NuGetTemplate\.template.config\ide.host.json
 		Source\NuGetTemplate\.template.config\template.json = Source\NuGetTemplate\.template.config\template.json
 	EndProjectSection
 EndProject
@@ -130,13 +134,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetTemplate.Test", "Sourc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{4EF24D41-295C-441C-91BB-B9B494CACFBB}"
 	ProjectSection(SolutionItems) = preProject
-		.github\autolabeler.yml = .github\autolabeler.yml
+		.github\dependabot.yml = .github\dependabot.yml
 		.github\release-drafter.yml = .github\release-drafter.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{5E91ACD7-52BB-4F1E-9528-6636248F3E58}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\codeql-analysis.yml = .github\workflows\codeql-analysis.yml
 		.github\workflows\release-drafter.yml = .github\workflows\release-drafter.yml
 	EndProjectSection
 EndProject

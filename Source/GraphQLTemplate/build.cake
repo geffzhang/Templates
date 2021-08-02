@@ -1,20 +1,20 @@
 var target = Argument("Target", "Default");
 var configuration =
     HasArgument("Configuration") ? Argument<string>("Configuration") :
-    EnvironmentVariable("Configuration") is object ? EnvironmentVariable("Configuration") :
+    EnvironmentVariable("Configuration") is not null ? EnvironmentVariable("Configuration") :
     "Release";
 //#if (Docker)
 var tag =
     HasArgument("Tag") ? Argument<string>("Tag") :
-    EnvironmentVariable("Tag") is object ? EnvironmentVariable("Tag") :
+    EnvironmentVariable("Tag") is not null ? EnvironmentVariable("Tag") :
     null;
 var platform =
     HasArgument("Platform") ? Argument<string>("Platform") :
-    EnvironmentVariable("Platform") is object ? EnvironmentVariable("Platform") :
+    EnvironmentVariable("Platform") is not null ? EnvironmentVariable("Platform") :
     "linux/amd64,linux/arm64";
 var push =
     HasArgument("Push") ? Argument<bool>("Push") :
-    EnvironmentVariable("Push") is object ? bool.Parse(EnvironmentVariable("Push")) :
+    EnvironmentVariable("Push") is not null ? bool.Parse(EnvironmentVariable("Push")) :
     false;
 //#endif
 
@@ -59,25 +59,26 @@ Task("Test")
             project.ToString(),
             new DotNetCoreTestSettings()
             {
+                Blame = true,
+                Collectors = new string[] { "XPlat Code Coverage" },
                 Configuration = configuration,
-                Logger = $"trx;LogFileName={project.GetFilenameWithoutExtension()}.trx",
+                Loggers = new string[]
+                {
+                    $"trx;LogFileName={project.GetFilenameWithoutExtension()}.trx",
+                    $"html;LogFileName={project.GetFilenameWithoutExtension()}.html",
+                },
                 NoBuild = true,
                 NoRestore = true,
                 ResultsDirectory = artefactsDirectory,
-                ArgumentCustomization = x => x
-                    .Append("--blame")
-                    .AppendSwitch("--logger", $"html;LogFileName={project.GetFilenameWithoutExtension()}.html")
-                    .Append("--collect:\"XPlat Code Coverage\""),
             });
     });
 
 Task("Publish")
     .Description("Publishes the solution.")
-    .Does(() =>
+    .DoesForEach(GetFiles("./Source/**/*.csproj"), project =>
     {
-        Information(artefactsDirectory.GetType().Name);
         DotNetCorePublish(
-            ".",
+            project.ToString(),
             new DotNetCorePublishSettings()
             {
                 Configuration = configuration,
@@ -92,28 +93,9 @@ Task("DockerBuild")
     .Description("Builds a Docker image.")
     .DoesForEach(GetFiles("./**/Dockerfile"), dockerfile =>
     {
-        var directoryBuildPropsFilePath = GetFiles("Directory.Build.props").Single().ToString();
-        var directoryBuildPropsDocument = System.Xml.Linq.XDocument.Load(directoryBuildPropsFilePath);
-        var preReleasePhase = directoryBuildPropsDocument.Descendants("MinVerDefaultPreReleasePhase").Single().Value;
-
-        string version = null;
-        StartProcess(
-            "dotnet",
-            new ProcessSettings()
-                .WithArguments(x => x
-                    .Append("minver")
-                    .AppendSwitch("--default-pre-release-phase", preReleasePhase))
-                .SetRedirectStandardOutput(true)
-                .SetRedirectedStandardOutputHandler(
-                    output =>
-                    {
-                        if (output != null)
-                        {
-                            version = output;
-                        }
-                        return output;
-                    }));
         tag = tag ?? dockerfile.GetDirectory().GetDirectoryName().ToLower();
+        var version = GetVersion();
+        var gitCommitSha = GetGitCommitSha();
 
         // Docker buildx allows you to build Docker images for multiple platforms (including x64, x86 and ARM64) and
         // push them at the same time. To enable buildx, you may need to enable experimental support with these commands:
@@ -132,6 +114,7 @@ Task("DockerBuild")
                 .AppendSwitchQuoted("--tag", $"{tag}:{version}")
                 .AppendSwitchQuoted("--build-arg", $"Configuration={configuration}")
                 .AppendSwitchQuoted("--label", $"org.opencontainers.image.created={DateTimeOffset.UtcNow:o}")
+                .AppendSwitchQuoted("--label", $"org.opencontainers.image.revision={gitCommitSha}")
                 .AppendSwitchQuoted("--label", $"org.opencontainers.image.version={version}")
                 .AppendSwitchQuoted("--file", dockerfile.ToString())
                 .Append(".")
@@ -145,6 +128,7 @@ Task("DockerBuild")
         //         .AppendSwitchQuoted("--tag", $"{tag}:{version}")
         //         .AppendSwitchQuoted("--build-arg", $"Configuration={configuration}")
         //         .AppendSwitchQuoted("--label", $"org.opencontainers.image.created={DateTimeOffset.UtcNow:o}")
+        //         .AppendSwitchQuoted("--label", $"org.opencontainers.image.revision={gitCommitSha}")
         //         .AppendSwitchQuoted("--label", $"org.opencontainers.image.version={version}")
         //         .AppendSwitchQuoted("--file", dockerfile.ToString())
         //         .Append(".")
@@ -157,6 +141,34 @@ Task("DockerBuild")
         //             .AppendSwitchQuoted("push", $"{tag}:{version}")
         //             .RenderSafe());
         // }
+
+        string GetVersion()
+        {
+            var directoryBuildPropsFilePath = GetFiles("Directory.Build.props").Single().ToString();
+            var directoryBuildPropsDocument = System.Xml.Linq.XDocument.Load(directoryBuildPropsFilePath);
+            var preReleasePhase = directoryBuildPropsDocument.Descendants("MinVerDefaultPreReleasePhase").Single().Value;
+
+            StartProcess(
+                "dotnet",
+                new ProcessSettings()
+                    .WithArguments(x => x
+                        .Append("minver")
+                        .AppendSwitch("--default-pre-release-phase", preReleasePhase))
+                    .SetRedirectStandardOutput(true),
+                    out var versionLines);
+            return versionLines.LastOrDefault();
+        }
+
+        string GetGitCommitSha()
+        {
+            StartProcess(
+                "git",
+                new ProcessSettings()
+                    .WithArguments(x => x.Append("rev-parse HEAD"))
+                    .SetRedirectStandardOutput(true),
+                out var shaLines);
+            return shaLines.LastOrDefault();
+        }
     });
 
 Task("Default")

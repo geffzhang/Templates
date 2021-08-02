@@ -6,11 +6,15 @@ namespace GraphQLTemplate
     using GraphQLTemplate.Constants;
     using GraphQLTemplate.Options;
     using Microsoft.AspNetCore.Builder;
+#if Serilog
     using Microsoft.AspNetCore.Http;
+#endif
     using Microsoft.Extensions.DependencyInjection;
+#if Serilog
     using Serilog;
 #if HealthCheck
     using Serilog.Events;
+#endif
 #endif
 
     internal static partial class ApplicationBuilderExtensions
@@ -34,9 +38,16 @@ namespace GraphQLTemplate
                 .UseStaticFiles(
                     new StaticFileOptions()
                     {
-                        OnPrepareResponse = context => context.Context.ApplyCacheProfile(cacheProfile),
+                        OnPrepareResponse = context =>
+                        {
+                            if (cacheProfile is not null)
+                            {
+                                context.Context.ApplyCacheProfile(cacheProfile);
+                            }
+                        },
                     });
         }
+#if Serilog
 
         /// <summary>
         /// Uses custom serilog request logging. Adds additional properties to each log.
@@ -75,7 +86,7 @@ namespace GraphQLTemplate
                             diagnosticContext.Set("ClientVersion", clientVersion);
                         }
 
-                        if (endpoint is object)
+                        if (endpoint is not null)
                         {
                             diagnosticContext.Set("EndpointName", endpoint.DisplayName);
                         }
@@ -103,7 +114,7 @@ namespace GraphQLTemplate
                     static bool IsHealthCheckEndpoint(HttpContext httpContext)
                     {
                         var endpoint = httpContext.GetEndpoint();
-                        if (endpoint is object)
+                        if (endpoint is not null)
                         {
                             return endpoint.DisplayName == "Health checks";
                         }
@@ -112,5 +123,6 @@ namespace GraphQLTemplate
                     }
 #endif
                 });
+#endif
     }
 }

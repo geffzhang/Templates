@@ -27,11 +27,15 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 - **Description** - A description of the project which determines the assembly description. If the Swagger feature is enabled, shows the description on the Swagger UI.
 - **Author** - The name of the author of the project which determines the assembly author and copyright information.
 - **Contact** - The contact details to use if someone wants to contact you about a security vulnerability or code of conduct issues.
-- **EditorConfig** - Add a .editorconfig file to set a fixed code style.
 - **ReadMe** - Add a README.md markdown file describing the project.
+- **EditorConfig** - Add a .editorconfig file to set a fixed code style.
 - **TreatWarningsAsErrors** - Treat warnings as errors.
-- **HttpPort** - Port number to use for the HTTP endpoint in launchSettings.json.
-- **HttpsPort** - Port number to use for the HTTPS endpoint in launchSettings.json.
+
+#### Ports
+
+- **HttpPort** (Default=5000) - Port number to use for the Kestrel HTTP endpoint in `launchSettings.json`.
+- **HttpsPort** (Default=5001) - Port number to use for the Kestrel HTTPS endpoint in `launchSettings.json`.
+- **IISExpressHttpsPort** (Default=44300) - Port number to use for the IIS Express HTTPS endpoint in `launchSettings.json` (Must be between 44300 and 44399).
 
 #### Source Control
 
@@ -43,7 +47,7 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 
 #### Continuous Integration (CI)
 
-- **GitHubActions** (Default=On) - Adds GitHub Actions continuous integration and automatic release drafting.
+- **GitHubActions** (Default=On) - Adds GitHub Actions continuous integration, automatic release drafting and [CodeQL](https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/about-code-scanning) security scanning.
 
 #### Performance
 
@@ -52,7 +56,7 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 
 #### Security
 
-- **HttpsEverywhere** (Default=On) - Use the HTTPS scheme and TLS security across the entire site, redirects HTTP to HTTPS and adds a Strict Transport Security (HSTS) HTTP header with preloading enabled.
+- **HttpsEverywhere** (Default=Off) - Use the HTTPS scheme and TLS security across the entire site, redirects HTTP to HTTPS and adds a Strict Transport Security (HSTS) HTTP header with preloading enabled.
 - **HstsPreload** (Default=Off) - Enable Strict Transport Security (HSTS) HTTP header with preloading.
 - **CORS** (Default=On) - Browser security prevents a web page from making AJAX requests to another domain. This restriction is called the same-origin policy, and prevents a malicious site from reading sensitive data from another site. CORS is a W3C standard that allows a server to relax the same-origin policy. Using CORS, a server can explicitly allow some cross-origin requests while rejecting others.
 - **HostFiltering** (Default=On) - A white-list of host names allowed by the Kestrel web server e.g. example.com. You don't need this if you are using a properly configured reverse proxy.
@@ -62,10 +66,15 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 
 - **ForwardedHeaders** (Default=On) - If you use a load balancer, updates the request host and scheme using the X-Forwarded-Host and X-Forwarded-Proto HTTP headers.
 - **ReverseProxyWebServer** - The internet facing reverse proxy web server you want to use in front of the primary web server to host the site.
-  - **None** - Use Kestrel directly instead of a reverse proxy.
+  - **None** (Default) - Use Kestrel directly instead of a reverse proxy.
   - **IIS** - A flexible, secure and manageable Web server for hosting anything on the Web using Windows Server. Select this option if you are deploying your site to Azure web apps.
   - **NGINX** - A free, open-source, cross-platform high-performance HTTP server and reverse proxy.
-  - **Both** (Default) - Support both reverse proxy web servers.
+  - **Both** - Support both reverse proxy web servers.
+
+#### Telemetry
+
+- **Serilog** (Default=On) - Logging using [Serilog](https://serilog.net/) provides an excellent structured logging experience.
+- **OpenTelemetry** (Default=Off) - Instrument, generate, collect, and export telemetry data (metrics, logs, and traces) using the Open Telemetry standard.
 
 #### Analytics
 
@@ -85,9 +94,15 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 
 - **IntegrationTest** - Adds an integration test project.
 
-#### Other
+#### Docker
 
 - **Docker** (Default=On) - Adds an optimised Dockerfile to add the ability build a Docker image.
+- **DockerRegistry** - The Docker container registry to push Docker images to.
+  - **GitHubContainerRegistry** (Default) - Push Docker images to the GitHub Container Registry.
+  - **DockerHub** - Push Docker images to Docker Hub.
+
+#### Other
+
 - **robots.txt** (Default=On) - Adds a robots.txt file to tell search engines not to index this site.
 - **humans.txt** (Default=On) - Adds a humans.txt file where you can tell the world who wrote the application. This file is a good place to thank your developers.
 
@@ -119,10 +134,6 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 - **User Secrets** - This feature is turned on when the site is in development mode to allow storing of secrets on your development machine.
 - **Remove Server HTTP Header** - Removes the Server HTTP header for security and performance.
 - **Translates Models to ViewModels** - Using your models which usually come from a database directly in your controllers can result in a mass assignment attack. View models with a translation layer are used to avoid this.
-
-#### Logging
-
-- **Serilog** - Has [Serilog](https://serilog.net/) built in for an excellent structured logging experience.
 
 #### Debugging
 

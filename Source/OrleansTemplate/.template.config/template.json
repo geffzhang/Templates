@@ -1,21 +1,31 @@
-// https://github.com/dotnet/templating/wiki/%22Runnable-Project%22-Templates#configuration
 {
   "$schema": "http://json.schemastore.org/template",
-  "author": "Muhammad Rehan Saeed (RehanSaeed.com)",
-  "classifications": [ "Web", "WebAPI", "Boxed", "Orleans", "API", "Actor" ],
-  "name": "ASP.NET Core Orleans Boxed (beta)",
+  "author": ".NET Boxed",
+  "classifications": [
+    ".NET Boxed",
+    "Cloud",
+    "Service",
+    "Web"
+  ],
+  "name": "ASP.NET Core Orleans Boxed",
+  "description": "A solution and project for creating and publishing a Microsoft Orleans API.",
   "groupIdentity": "Dotnet.Boxed.Orleans",
   "identity": "Dotnet.Boxed.Orleans.CSharp",
   "shortName": "orleans",
+  "defaultName": "OrleansApplication1",
   "tags": {
     "language": "C#",
-    "type": "project"
+    "type": "solution"
   },
   "sourceName": "OrleansTemplate",
   "preferNameDirectory": true,
   "guids": [
-    // User Secret ID
-    "113f2d04-69f0-40c3-8797-ba3f356dd812"
+    "113f2d04-69f0-40c3-8797-ba3f356dd812",
+    "B6993204-7350-4D3E-8C48-6C3914230E9F",
+    "583E0D0E-322C-4C13-81C6-5E3FB785A8AF",
+    "F522EB3C-EF6B-4517-B8D7-F1363E7ADC6E",
+    "2A41B472-8BCE-42D5-A64B-C1ED9C9BA60C",
+    "B186DB6A-88E5-40AB-B3E1-1468C925C9B7"
   ],
   "primaryOutputs": [
     { "path": "OrleansTemplate.sln" }
@@ -23,14 +33,19 @@
   "sources": [
     {
       "modifiers": [
-        // EditorConfig
+        {
+          "condition": "(!Serilog)",
+          "exclude": [
+            "Source/OrleansTemplate.Server/Extensions/TraceIdEnricher.cs",
+            "Source/OrleansTemplate.Server/ApplicationBuilderExtensions.cs"
+          ]
+        },
         {
           "condition": "(!EditorConfig)",
           "exclude": [
             ".editorconfig"
           ]
         },
-        // GitHub
         {
           "condition": "(!GitHub)",
           "exclude": [
@@ -41,14 +56,12 @@
             ".github/SECURITY.md"
           ]
         },
-        // ReadMe
         {
           "condition": "(!ReadMe)",
           "exclude": [
             "README.md"
           ]
         },
-        // HealthCheck
         {
           "condition": "(!HealthCheck)",
           "exclude": [
@@ -59,14 +72,12 @@
             "Source/OrleansTemplate.Server/Startup.cs"
           ]
         },
-        // IntegrationTest
         {
           "condition": "(!IntegrationTest)",
           "exclude": [
             "Tests/ApiTemplate.IntegrationTest/**/*"
           ]
         },
-        // Docker
         {
           "condition": "(!Docker)",
           "exclude": [
@@ -74,20 +85,27 @@
             ".dockerignore"
           ]
         },
-        // GitHubActions
         {
           "condition": "(!GitHubActions)",
           "exclude": [
             ".github/workflows/build.yml",
+            ".github/workflows/codeql-analysis.yml",
             ".github/workflows/release-drafter.yml",
             ".github/release-drafter.yml"
+          ]
+        },
+        {
+          "condition": "(!OpenTelemetry)",
+          "exclude": [
+            "Source/OrleansTemplate.Abstractions/Constants/OpenTelemetryAttributeName.cs",
+            "Source/OrleansTemplate.Abstractions/Constants/OpenTelemetryHttpFlavour.cs",
+            "Source/OrleansTemplate.Server/ServiceCollectionExtensions.cs"
           ]
         }
       ]
     }
   ],
   "symbols": {
-    // Title
     "Title": {
       "type": "parameter",
       "datatype": "string",
@@ -101,7 +119,6 @@
       "valueSource": "Title",
       "valueTransform": "xmlEncode"
     },
-    // Description
     "Description": {
       "type": "parameter",
       "datatype": "string",
@@ -115,7 +132,6 @@
       "valueSource": "Description",
       "valueTransform": "xmlEncode"
     },
-    // Author
     "Author": {
       "type": "parameter",
       "datatype": "string",
@@ -129,7 +145,6 @@
       "valueSource": "Author",
       "valueTransform": "xmlEncode"
     },
-    // Contact
     "Contact": {
       "type": "parameter",
       "datatype": "string",
@@ -143,14 +158,12 @@
       "valueSource": "Contact",
       "valueTransform": "xmlEncode"
     },
-    // EditorConfig
     "EditorConfig": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
       "description": "Add a .editorconfig file to set a fixed code style."
     },
-    // SourceControl
     "SourceControl": {
       "type": "parameter",
       "datatype": "choice",
@@ -171,7 +184,6 @@
       "type": "computed",
       "value": "(SourceControl == \"GitHub\")"
     },
-    // GitHubUsername
     "GitHubUsername": {
       "type": "parameter",
       "datatype": "string",
@@ -179,7 +191,12 @@
       "replaces": "GITHUB-USERNAME",
       "description": "Your GitHub username or organisation name that the project lives under."
     },
-    // GitHubProject
+    "GitHubUsernameLowercase": {
+      "type": "derived",
+      "replaces": "GITHUB-USERNAME-LOWERCASE",
+      "valueSource": "GitHubUsername",
+      "valueTransform": "lowerCaseInvariant"
+    },
     "GitHubProject": {
       "type": "parameter",
       "datatype": "string",
@@ -187,21 +204,44 @@
       "replaces": "GITHUB-PROJECT",
       "description": "The name of your GitHub project."
     },
-    // ReadMe
     "ReadMe": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
       "description": "Add a README.md markdown file describing the project."
     },
-    // TreatWarningsAsErrors
     "TreatWarningsAsErrors": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
       "description": "Treat warnings as errors."
     },
-    // Analytics
+    "OpenTelemetry": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Instrument, generate, collect, and export telemetry data (metrics, logs, and traces) using the Open Telemetry standard."
+    },
+    "Logging": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "Serilog",
+          "description": "Logging using Serilog provides an excellent structured logging experience."
+        },
+        {
+          "choice": "None",
+          "description": "Not using any logging."
+        }
+      ],
+      "defaultValue": "None",
+      "description": "The logging framework to use."
+    },
+    "Serilog": {
+      "type": "computed",
+      "value": "(Logging == \"Serilog\")"
+    },
     "Analytics": {
       "type": "parameter",
       "datatype": "choice",
@@ -222,19 +262,40 @@
       "type": "computed",
       "value": "(Analytics == \"Application Insights\")"
     },
-    // ApplicationInsightsKey
     "ApplicationInsightsKey": {
       "type": "parameter",
       "datatype": "string",
+      "defaultValue": "11111111-2222-3333-4444-555555555555",
       "replaces": "APPLICATION-INSIGHTS-INSTRUMENTATION-KEY",
       "description": "Your Application Insights instrumentation key e.g. 11111111-2222-3333-4444-555555555555."
     },
-    // HealthCheck
     "HealthCheck": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
       "description": "A health-check endpoint that returns the status of this API and its dependencies, giving an indication of its health."
+    },
+    "HttpPort": {
+      "type": "parameter",
+      "datatype": "integer",
+      "description": "Port number to use for the HTTP endpoint in launchSettings.json.",
+      "defaultValue": "8080"
+    },
+    "HttpPortConstant": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": {
+        "value": "8080"
+      }
+    },
+    "HttpPortReplacer": {
+      "type": "generated",
+      "generator": "coalesce",
+      "parameters": {
+        "sourceVariableName": "HttpPort",
+        "fallbackVariableName": "HttpPortConstant"
+      },
+      "replaces": "8080"
     },
     "TLS": {
       "type": "parameter",
@@ -260,39 +321,54 @@
       "description": "Adds an optimised Dockerfile to add the ability build a Docker image.",
       "defaultValue": "true"
     },
-    // GitHubActions
+    "DockerRegistry": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "GitHubContainerRegistry",
+          "description": "Push Docker images to the GitHub Container Registry."
+        },
+        {
+          "choice": "DockerHub",
+          "description": "Push Docker images to Docker Hub."
+        }
+      ],
+      "defaultValue": "GitHubContainerRegistry",
+      "description": "The Docker container registry to push Docker images to."
+    },
+    "GitHubContainerRegistry": {
+      "type": "computed",
+      "value": "(DockerRegistry == \"GitHubContainerRegistry\")"
+    },
+    "DockerHub": {
+      "type": "computed",
+      "value": "(DockerRegistry == \"DockerHub\")"
+    },
     "GitHubActions": {
       "type": "parameter",
       "datatype": "bool",
-      "description": "Adds GitHub Actions continuous integration and automatic release drafting.",
+      "description": "Adds GitHub Actions continuous integration, automatic release drafting and CodeQL security scanning.",
       "defaultValue": "true"
     },
 
-    // AuthoringMode
     "AuthoringMode": {
       "type": "generated",
       "generator": "constant",
       "parameters": {
-        "value": false
+        "value": "false"
       }
     },
-    // https://github.com/dotnet/templating/wiki/Post-Action-Registry
-    "SkipRestore": {
+    "SkipInstallAzureStorageEmulator": {
       "type": "parameter",
       "datatype": "bool",
-      "description": "Skips the execution of 'dotnet restore' on project creation.",
+      "description": "Skips the installation of the Azure Storage Emulator.",
       "defaultValue": "false"
     },
-    //"SkipOpenToDo": {
-    //  "type": "parameter",
-    //  "datatype": "bool",
-    //  "description": "Skips opening the to-do list for the project in a web browser.",
-    //  "defaultValue": "false"
-    //},
-    "SkipOpenAzureStorageEmulator": {
+    "SkiStartAzureStorageEmulator": {
       "type": "parameter",
       "datatype": "bool",
-      "description": "Skips the running of the Azure Storage Emulator.",
+      "description": "Skips the execution of the Azure Storage Emulator.",
       "defaultValue": "false"
     }
   },
@@ -304,7 +380,7 @@
           "configuration": {
             "actionableIf": [ "<!--#if" ],
             "actionableElse": [ "#else", "<!--#else" ],
-            "actionableElseif": [ "#elseif", "<!--#elseif", "#elif", "<!--#elif" ],
+            "actionableElseif": [ "#elif", "<!--#elif", "#elif", "<!--#elif" ],
             "endif": [ "#endif", "<!--#endif" ],
             "trim": "true",
             "wholeLine": "true",
@@ -330,11 +406,11 @@
           "configuration": {
             "if": [ "#if" ],
             "else": [ "#else" ],
-            "elseif": [ "#elseif" ],
+            "elseif": [ "#elif" ],
             "endif": [ "#endif" ],
             "actionableIf": [ "##if" ],
             "actionableElse": [ "##else" ],
-            "actionableElseif": [ "##elseif" ],
+            "actionableElseif": [ "##elif" ],
             "actions": [ "uncomment", "reduceComment" ],
             "trim": "true",
             "wholeLine": "true",
@@ -366,11 +442,11 @@
           "configuration": {
             "if": [ "#if" ],
             "else": [ "#else" ],
-            "elseif": [ "#elseif" ],
+            "elseif": [ "#elif" ],
             "endif": [ "#endif" ],
             "actionableIf": [ "##if" ],
             "actionableElse": [ "##else" ],
-            "actionableElseif": [ "##elseif" ],
+            "actionableElseif": [ "##elif" ],
             "actions": [ "uncomment", "reduceComment" ],
             "trim": "true",
             "wholeLine": "true",
@@ -402,11 +478,11 @@
           "configuration": {
             "if": [ "#if" ],
             "else": [ "#else" ],
-            "elseif": [ "#elseif" ],
+            "elseif": [ "#elif" ],
             "endif": [ "#endif" ],
             "actionableIf": [ "##if" ],
             "actionableElse": [ "##else" ],
-            "actionableElseif": [ "##elseif" ],
+            "actionableElseif": [ "##elif" ],
             "actions": [ "uncomment", "reduceComment" ],
             "trim": "true",
             "wholeLine": "true",
@@ -434,31 +510,32 @@
   },
   "postActions": [
     {
-      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
-      "condition": "(!SkipRestore)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "condition": "(!SkipInstallAzureStorageEmulator)",
       "continueOnError": true,
-      "description": "Restore NuGet packages required by this project.",
-      "manualInstructions": [
-        { "text": "Run 'dotnet restore' in the directory the template was created in." }
-      ]
+      "description ": "Install the Azure Storage Emulator where data is stored at development time.",
+      "args": {
+        "executable": "powershell.exe",
+        "args": "start https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator",
+        "redirectStandardOutput": "false"
+      },
+      "manualInstructions": [{
+         "text": "Install the Azure Storage Emulator from https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator."
+      }]
     },
-    //{
-    //  "actionId": "FEA7469E-E2E7-4431-B86B-27EBC1744883",
-    //  "condition": "(!SkipOpenToDo)",
-    //  "continueOnError": true,
-    //  "description": "Open the to-do list for the project in a web browser.",
-    //  "manualInstructions": [
-    //    { "text": "Open the TODO.html in a web browser to see a to-do list." }
-    //  ]
-    //},
     {
-      "actionId": "FEA7469E-E2E7-4431-B86B-27EBC1744883",
-      "condition": "(!SkipOpenAzureStorageEmulator)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "condition": "(!SkiStartAzureStorageEmulator)",
       "continueOnError": true,
-      "description": "Run the Azure Storage Emulator.",
-      "manualInstructions": [
-        { "text": "Run the Azure Storage Emulator (Download at https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator)." }
-      ]
+      "description ": "Run the Azure Storage Emulator.",
+      "args": {
+        "executable": "C:\\Program Files (x86)\\Microsoft SDKs\\Azure\\Storage Emulator\\AzureStorageEmulator.exe",
+        "args": "start",
+        "redirectStandardOutput": "false"
+      },
+      "manualInstructions": [{
+         "text": "Run the Azure Storage Emulator."
+      }]
     }
   ]
 }

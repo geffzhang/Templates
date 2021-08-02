@@ -4,11 +4,11 @@ using System.Security.Cryptography.X509Certificates;
 var target = Argument("Target", "Default");
 var configuration =
     HasArgument("Configuration") ? Argument<string>("Configuration") :
-    EnvironmentVariable("Configuration") is object ? EnvironmentVariable("Configuration") :
+    EnvironmentVariable("Configuration") is not null ? EnvironmentVariable("Configuration") :
     "Release";
 var template =
     HasArgument("Template") ? Argument<string>("Template") :
-    EnvironmentVariable("Template") is object ? EnvironmentVariable("Template") :
+    EnvironmentVariable("Template") is not null ? EnvironmentVariable("Template") :
     null;
 
 var artefactsDirectory = Directory("./Artefacts");
@@ -33,7 +33,7 @@ Task("Restore")
         DotNetCoreRestore();
     });
 
- Task("Build")
+Task("Build")
     .Description("Builds the solution.")
     .IsDependentOn("Restore")
     .Does(() =>
@@ -100,7 +100,7 @@ Task("Test")
             filters.Add("IsUsingDocker=false");
         }
 
-        if (template != null)
+        if (template is not null)
         {
             filters.Add($"Template={template}");
         }
@@ -109,16 +109,18 @@ Task("Test")
             project.ToString(),
             new DotNetCoreTestSettings()
             {
+                Blame = true,
+                Collectors = new string[] { "XPlat Code Coverage" },
                 Configuration = configuration,
                 Filter = string.Join("&", filters),
-                Logger = $"trx;LogFileName={project.GetFilenameWithoutExtension()}.trx",
+                Loggers = new string[]
+                {
+                    $"trx;LogFileName={project.GetFilenameWithoutExtension()}.trx",
+                    $"html;LogFileName={project.GetFilenameWithoutExtension()}.html",
+                },
                 NoBuild = true,
                 NoRestore = true,
                 ResultsDirectory = artefactsDirectory,
-                ArgumentCustomization = x => x
-                    .Append("--blame")
-                    .AppendSwitch("--logger", $"html;LogFileName={project.GetFilenameWithoutExtension()}.html")
-                    .Append("--collect:\"XPlat Code Coverage\""),
             });
     });
 
@@ -127,7 +129,7 @@ Task("Pack")
     .Does(() =>
     {
         DotNetCorePack(
-            GetFiles(templatePackProject).Single().ToString(),
+            GetFiles(templatePackProject.ToString()).Single().ToString(),
             new DotNetCorePackSettings()
             {
                 Configuration = configuration,
@@ -135,6 +137,38 @@ Task("Pack")
                 NoRestore = true,
                 OutputDirectory = artefactsDirectory,
             });
+    });
+
+Task("Install")
+    .Description("Installs the templates.")
+    .IsDependentOn("Pack")
+    .Does(() =>
+    {
+        foreach (var process in System.Diagnostics.Process.GetProcessesByName("devenv"))
+        {
+            process.Kill();
+        }
+
+        var templateEnginePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".templateengine");
+        CleanDirectory(templateEnginePath);
+
+        var nugetPackages = GetFiles(artefactsDirectory.ToString() + "/*.nupkg");
+        foreach (var nugetPackage in nugetPackages)
+        {
+            StartProcess(
+                "dotnet",
+                new ProcessArgumentBuilder()
+                    .Append("new")
+                    .AppendSwitchQuoted("--install", nugetPackage.ToString()));
+        }
+    });
+
+Task("Start")
+    .Description("Starts Visual Studio.")
+    .IsDependentOn("Install")
+    .Does(() =>
+    {
+        StartAndReturnProcess(@"C:\Program Files (x86)\Microsoft Visual Studio\2019\Preview\Common7\IDE\devenv.exe");
     });
 
 Task("Default")

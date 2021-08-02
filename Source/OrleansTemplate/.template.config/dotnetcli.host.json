@@ -37,8 +37,17 @@
     "GitHubProject": {
       "longName": "github-project"
     },
+    "ReadMe": {
+      "longName": "readme"
+    },
     "TreatWarningsAsErrors": {
       "longName": "treat-warnings-as-errors"
+    },
+    "OpenTelemetry": {
+      "longName": "open-telemetry"
+    },
+    "Logging": {
+      "longName": "logging"
     },
     "Analytics": {
       "longName": "analytics"
@@ -48,6 +57,9 @@
     },
     "HealthCheck": {
       "longName": "health-check"
+    },
+    "HttpPort": {
+      "longName": "http-port"
     },
     "TLS": {
       "longName": "tls"
@@ -61,17 +73,17 @@
     "Docker": {
       "longName": "docker"
     },
+    "DockerRegistry": {
+      "longName": "docker-registry"
+    },
     "GitHubActions": {
       "longName": "github-actions"
     },
-    "SkipRestore": {
-      "longName": "no-restore"
+    "SkipInstallAzureStorageEmulator": {
+      "longName": "no-install-storage-emulator"
     },
-    //"SkipOpenToDo": {
-    //  "longName": "no-open-todo"
-    //},
-    "SkipOpenAzureStorageEmulator": {
-      "longName": "no-storage-emulator"
+    "SkiStartAzureStorageEmulator": {
+      "longName": "no-start-storage-emulator"
     }
   }
 }

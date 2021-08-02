@@ -13,7 +13,7 @@ namespace ApiTemplate.Commands
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Routing;
 
-    public class GetCarPageCommand : IGetCarPageCommand
+    public class GetCarPageCommand
     {
         private const string LinkHttpHeaderName = "Link";
         private const int DefaultPageSize = 3;
@@ -64,6 +64,7 @@ namespace ApiTemplate.Commands
             var (startCursor, endCursor) = Cursor.GetFirstAndLastCursor(cars, x => x.Created);
             var carViewModels = this.carMapper.MapList(cars);
 
+            var httpContext = this.httpContextAccessor.HttpContext!;
             var connection = new Connection<Car>()
             {
                 PageInfo = new PageInfo()
@@ -72,43 +73,41 @@ namespace ApiTemplate.Commands
                     HasNextPage = hasNextPage,
                     HasPreviousPage = hasPreviousPage,
                     NextPageUrl = hasNextPage ? new Uri(this.linkGenerator.GetUriByRouteValues(
-                        this.httpContextAccessor.HttpContext,
-                        CarsControllerRoute.GetCarPage,
-                        new PageOptions()
-                        {
-                            First = pageOptions.First,
-                            Last = pageOptions.Last,
-                            After = endCursor,
-                        })) : null,
-                    PreviousPageUrl = hasPreviousPage ? new Uri(this.linkGenerator.GetUriByRouteValues(
-                        this.httpContextAccessor.HttpContext,
-                        CarsControllerRoute.GetCarPage,
-                        new PageOptions()
-                        {
-                            First = pageOptions.First,
-                            Last = pageOptions.Last,
-                            Before = startCursor,
-                        })) : null,
-                    FirstPageUrl = new Uri(this.linkGenerator.GetUriByRouteValues(
-                        this.httpContextAccessor.HttpContext,
+                        httpContext,
                         CarsControllerRoute.GetCarPage,
                         new PageOptions()
                         {
                             First = pageOptions.First ?? pageOptions.Last,
-                        })),
-                    LastPageUrl = new Uri(this.linkGenerator.GetUriByRouteValues(
-                        this.httpContextAccessor.HttpContext,
+                            After = endCursor,
+                        })!) : null,
+                    PreviousPageUrl = hasPreviousPage ? new Uri(this.linkGenerator.GetUriByRouteValues(
+                        httpContext,
                         CarsControllerRoute.GetCarPage,
                         new PageOptions()
                         {
                             Last = pageOptions.First ?? pageOptions.Last,
-                        })),
+                            Before = startCursor,
+                        })!) : null,
+                    FirstPageUrl = new Uri(this.linkGenerator.GetUriByRouteValues(
+                        httpContext,
+                        CarsControllerRoute.GetCarPage,
+                        new PageOptions()
+                        {
+                            First = pageOptions.First ?? pageOptions.Last,
+                        })!),
+                    LastPageUrl = new Uri(this.linkGenerator.GetUriByRouteValues(
+                        httpContext,
+                        CarsControllerRoute.GetCarPage,
+                        new PageOptions()
+                        {
+                            Last = pageOptions.First ?? pageOptions.Last,
+                        })!),
                 },
                 TotalCount = totalCount,
             };
             connection.Items.AddRange(carViewModels);
 
-            this.httpContextAccessor.HttpContext.Response.Headers.Add(
+            httpContext.Response.Headers.Add(
                 LinkHttpHeaderName,
                 connection.PageInfo.ToLinkHttpHeaderValue());
 

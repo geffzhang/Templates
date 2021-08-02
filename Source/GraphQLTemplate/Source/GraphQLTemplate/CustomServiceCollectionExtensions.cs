@@ -1,27 +1,25 @@
 namespace GraphQLTemplate
 {
     using System;
+    using System.Collections.Generic;
 #if ResponseCompression
     using System.IO.Compression;
 #endif
     using System.Linq;
     using Boxed.AspNetCore;
-    using GraphQL;
-#if Authorization
-    using GraphQL.Authorization;
-#endif
-    using GraphQL.Server;
-    using GraphQL.Server.Internal;
-    using GraphQL.Validation;
-#if (Authorization || CORS)
+#if (Authorization || CORS || OpenTelemetry)
     using GraphQLTemplate.Constants;
 #endif
     using GraphQLTemplate.Options;
+    using HotChocolate.Execution.Options;
     using Microsoft.AspNetCore.Builder;
 #if (!ForwardedHeaders && HostFiltering)
     using Microsoft.AspNetCore.HostFiltering;
 #endif
     using Microsoft.AspNetCore.Hosting;
+#if OpenTelemetry
+    using Microsoft.AspNetCore.Http;
+#endif
 #if ResponseCompression
     using Microsoft.AspNetCore.ResponseCompression;
 #endif
@@ -30,6 +28,14 @@ namespace GraphQLTemplate
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Options;
+#if OpenTelemetry
+    using OpenTelemetry.Exporter;
+    using OpenTelemetry.Resources;
+    using OpenTelemetry.Trace;
+#endif
+#if Redis
+    using StackExchange.Redis;
+#endif
 
     /// <summary>
     /// <see cref="IServiceCollection"/> extension methods which extend ASP.NET Core services.
@@ -102,6 +108,11 @@ namespace GraphQLTemplate
                 .ConfigureAndValidateSingleton<HostFilteringOptions>(configuration.GetSection(nameof(ApplicationOptions.HostFiltering)))
 #endif
                 .ConfigureAndValidateSingleton<GraphQLOptions>(configuration.GetSection(nameof(ApplicationOptions.GraphQL)))
+                .ConfigureAndValidateSingleton<RequestExecutorOptions>(
+                    configuration.GetSection(nameof(ApplicationOptions.GraphQL)).GetSection(nameof(GraphQLOptions.Request)))
+#if Redis
+                .ConfigureAndValidateSingleton<RedisOptions>(configuration.GetSection(nameof(ApplicationOptions.Redis)))
+#endif
                 .ConfigureAndValidateSingleton<KestrelServerOptions>(configuration.GetSection(nameof(ApplicationOptions.Kestrel)));
 #if ResponseCompression
 
@@ -173,47 +184,108 @@ namespace GraphQLTemplate
 #endif
 #if HealthCheck
 
-        public static IServiceCollection AddCustomHealthChecks(this IServiceCollection services) =>
+        public static IServiceCollection AddCustomHealthChecks(
+            this IServiceCollection services,
+            IWebHostEnvironment webHostEnvironment,
+            IConfiguration configuration) =>
             services
                 .AddHealthChecks()
                 // Add health checks for external dependencies here. See https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
+#if Redis
+                .AddIf(
+                    !webHostEnvironment.IsEnvironment(Constants.EnvironmentName.Test),
+                    x => x.AddRedis(configuration.GetSection(nameof(ApplicationOptions.Redis)).Get<RedisOptions>().ConnectionString))
+#endif
                 .Services;
 #endif
+#if OpenTelemetry
 
-        public static IServiceCollection AddCustomGraphQL(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            IWebHostEnvironment webHostEnvironment) =>
-            services
-                // Add a way for GraphQL.NET to resolve types.
-                .AddSingleton<IDependencyResolver, GraphQLDependencyResolver>()
-                .AddGraphQL(
-                    options =>
+        /// <summary>
+        /// Adds Open Telemetry services and configures instrumentation and exporters.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="webHostEnvironment">The environment the application is running under.</param>
+        /// <returns>The services with open telemetry added.</returns>
+        public static IServiceCollection AddCustomOpenTelemetryTracing(this IServiceCollection services, IWebHostEnvironment webHostEnvironment) =>
+            services.AddOpenTelemetryTracing(
+                builder =>
+                {
+                    builder
+                        .SetResourceBuilder(ResourceBuilder
+                            .CreateDefault()
+                            .AddService(webHostEnvironment.ApplicationName, serviceVersion: AssemblyInformation.Current.Version)
+                            .AddAttributes(
+                                new KeyValuePair<string, object>[]
+                                {
+                                    new(OpenTelemetryAttributeName.Deployment.Environment, webHostEnvironment.EnvironmentName),
+                                    new(OpenTelemetryAttributeName.Host.Name, Environment.MachineName),
+                                }))
+                        .AddAspNetCoreInstrumentation(
+                            options =>
+                            {
+                                // Enrich spans with additional request and response meta data.
+                                // See https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/http.md
+                                options.Enrich = (activity, eventName, obj) =>
+                                {
+                                    if (obj is HttpRequest request)
+                                    {
+                                        var context = request.HttpContext;
+                                        activity.AddTag(OpenTelemetryAttributeName.Http.Flavor, GetHttpFlavour(request.Protocol));
+                                        activity.AddTag(OpenTelemetryAttributeName.Http.Scheme, request.Scheme);
+                                        activity.AddTag(OpenTelemetryAttributeName.Http.ClientIP, context.Connection.RemoteIpAddress);
+                                        activity.AddTag(OpenTelemetryAttributeName.Http.RequestContentLength, request.ContentLength);
+                                        activity.AddTag(OpenTelemetryAttributeName.Http.RequestContentType, request.ContentType);
+
+                                        var user = context.User;
+                                        if (user.Identity?.Name is not null)
+                                        {
+                                            activity.AddTag(OpenTelemetryAttributeName.EndUser.Id, user.Identity.Name);
+                                            activity.AddTag(OpenTelemetryAttributeName.EndUser.Scope, string.Join(',', user.Claims.Select(x => x.Value)));
+                                        }
+                                    }
+                                    else if (obj is HttpResponse response)
+                                    {
+                                        activity.AddTag(OpenTelemetryAttributeName.Http.ResponseContentLength, response.ContentLength);
+                                        activity.AddTag(OpenTelemetryAttributeName.Http.ResponseContentType, response.ContentType);
+                                    }
+
+                                    static string GetHttpFlavour(string protocol)
+                                    {
+                                        if (HttpProtocol.IsHttp10(protocol))
+                                        {
+                                            return OpenTelemetryHttpFlavour.Http10;
+                                        }
+                                        else if (HttpProtocol.IsHttp11(protocol))
+                                        {
+                                            return OpenTelemetryHttpFlavour.Http11;
+                                        }
+                                        else if (HttpProtocol.IsHttp2(protocol))
+                                        {
+                                            return OpenTelemetryHttpFlavour.Http20;
+                                        }
+                                        else if (HttpProtocol.IsHttp3(protocol))
+                                        {
+                                            return OpenTelemetryHttpFlavour.Http30;
+                                        }
+
+                                        throw new InvalidOperationException($"Protocol {protocol} not recognised.");
+                                    }
+                                };
+                                options.RecordException = true;
+                            });
+
+                    if (webHostEnvironment.IsDevelopment())
                     {
-                        var graphQLOptions = configuration
-                            .GetSection(nameof(ApplicationOptions.GraphQL))
-                            .Get<GraphQLOptions>();
-                        // Set some limits for security, read from configuration.
-                        options.ComplexityConfiguration = graphQLOptions.ComplexityConfiguration;
-                        // Enable GraphQL metrics to be output in the response, read from configuration.
-                        options.EnableMetrics = graphQLOptions.EnableMetrics;
-                        // Show stack traces in exceptions. Don't turn this on in production.
-                        options.ExposeExceptions = webHostEnvironment.IsDevelopment();
-                    })
-                // Adds all graph types in the current assembly with a singleton lifetime.
-                .AddGraphTypes()
-                // Adds ConnectionType<T>, EdgeType<T> and PageInfoType.
-                .AddRelayGraphTypes()
-                // Add a user context from the HttpContext and make it available in field resolvers.
-                .AddUserContextBuilder<GraphQLUserContextBuilder>()
-                // Add GraphQL data loader to reduce the number of calls to our repository.
-                .AddDataLoader()
-#if Subscriptions
-                // Add WebSockets support for subscriptions.
-                .AddWebSockets()
+                        builder.AddConsoleExporter(
+                            options => options.Targets = ConsoleExporterOutputTargets.Console | ConsoleExporterOutputTargets.Debug);
+                    }
+
+                    // TODO: Add OpenTelemetry.Instrumentation.* NuGet packages and configure them to collect more span data.
+                    //       E.g. Add the OpenTelemetry.Instrumentation.Http package to instrument calls to HttpClient.
+                    // TODO: Add OpenTelemetry.Exporter.* NuGet packages and configure them here to export open telemetry span data.
+                    //       E.g. Add the OpenTelemetry.Exporter.OpenTelemetryProtocol package to export span data to Jaeger.
+                });
 #endif
-                .Services
-                .AddTransient(typeof(IGraphQLExecuter<>), typeof(InstrumentingGraphQLExecutor<>));
 #if Authorization
 
         /// <summary>
@@ -221,19 +293,67 @@ namespace GraphQLTemplate
         /// </summary>
         /// <param name="services">The services.</param>
         /// <returns>The services with caching services added.</returns>
-        public static IServiceCollection AddCustomGraphQLAuthorization(this IServiceCollection services) =>
+        public static IServiceCollection AddCustomAuthorization(this IServiceCollection services) =>
             services
-                .AddSingleton<IAuthorizationEvaluator, AuthorizationEvaluator>()
-                .AddTransient<IValidationRule, AuthorizationValidationRule>()
-                .AddSingleton(
-                    x =>
-                    {
-                        var authorizationSettings = new AuthorizationSettings();
-                        authorizationSettings.AddPolicy(
-                            AuthorizationPolicyName.Admin,
-                            y => y.RequireClaim("role", "admin"));
-                        return authorizationSettings;
-                    });
+                .AddAuthorization(options => options
+                    .AddPolicy(AuthorizationPolicyName.Admin, x => x.RequireAuthenticatedUser()));
 #endif
+#if Redis
+
+        public static IServiceCollection AddCustomRedis(
+            this IServiceCollection services,
+            IWebHostEnvironment webHostEnvironment,
+            IConfiguration configuration) =>
+            services.AddIf(
+                !webHostEnvironment.IsEnvironment(Constants.EnvironmentName.Test),
+                x => x.AddSingleton<IConnectionMultiplexer>(
+                    ConnectionMultiplexer.Connect(
+                         configuration
+                            .GetSection(nameof(ApplicationOptions.Redis))
+                            .Get<RedisOptions>()
+                            .ConnectionString)));
+#endif
+
+        public static IServiceCollection AddCustomGraphQL(
+            this IServiceCollection services,
+            IWebHostEnvironment webHostEnvironment,
+            IConfiguration configuration)
+        {
+            var graphQLOptions = configuration.GetSection(nameof(ApplicationOptions.GraphQL)).Get<GraphQLOptions>();
+            return services
+                .AddGraphQLServer()
+                .AddFiltering()
+                .AddSorting()
+                .EnableRelaySupport()
+                .AddApolloTracing()
+#if Authorization
+                .AddAuthorization()
+#endif
+#if PersistedQueries
+                .UseAutomaticPersistedQueryPipeline()
+                .AddIfElse(
+                    webHostEnvironment.IsEnvironment(Constants.EnvironmentName.Test),
+                    x => x.AddInMemoryQueryStorage(),
+                    // Hot Chocolate contains a bug which requires us to add .GetApplicationServices() below.
+                    x => x.AddRedisQueryStorage(x => x.GetApplicationServices().GetRequiredService<IConnectionMultiplexer>().GetDatabase()))
+#endif
+#if Subscriptions
+                .AddIfElse(
+                    webHostEnvironment.IsEnvironment(Constants.EnvironmentName.Test),
+                    x => x.AddInMemorySubscriptions(),
+                    x => x.AddRedisSubscriptions(x => x.GetRequiredService<IConnectionMultiplexer>()))
+#endif
+                .AddProjectScalarTypes()
+                .AddProjectDirectives()
+                .AddProjectDataLoaders()
+                .AddProjectTypes()
+                .TrimTypes()
+                .ModifyOptions(options => options.UseXmlDocumentation = false)
+                .AddMaxComplexityRule(graphQLOptions.MaxAllowedComplexity)
+                .AddMaxExecutionDepthRule(graphQLOptions.MaxAllowedExecutionDepth)
+                .SetPagingOptions(graphQLOptions.Paging)
+                .SetRequestOptions(() => graphQLOptions.Request)
+                .Services;
+        }
     }
 }

@@ -2,9 +2,6 @@ namespace ApiTemplate
 {
     using System;
     using System.Linq;
-#if Versioning
-    using System.Reflection;
-#endif
     using ApiTemplate.Constants;
     using ApiTemplate.Options;
     using Boxed.AspNetCore;
@@ -14,9 +11,11 @@ namespace ApiTemplate
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
 #endif
     using Microsoft.Extensions.DependencyInjection;
+#if Serilog
     using Serilog;
 #if HealthCheck
     using Serilog.Events;
+#endif
 #endif
 
     internal static partial class ApplicationBuilderExtensions
@@ -40,9 +39,16 @@ namespace ApiTemplate
                 .UseStaticFiles(
                     new StaticFileOptions()
                     {
-                        OnPrepareResponse = context => context.Context.ApplyCacheProfile(cacheProfile),
+                        OnPrepareResponse = context =>
+                        {
+                            if (cacheProfile is not null)
+                            {
+                                context.Context.ApplyCacheProfile(cacheProfile);
+                            }
+                        },
                     });
         }
+#if Serilog
 
         /// <summary>
         /// Uses custom serilog request logging. Adds additional properties to each log.
@@ -69,7 +75,7 @@ namespace ApiTemplate
                             diagnosticContext.Set("QueryString", request.QueryString.Value);
                         }
 
-                        if (endpoint is object)
+                        if (endpoint is not null)
                         {
                             diagnosticContext.Set("EndpointName", endpoint.DisplayName);
                         }
@@ -97,7 +103,7 @@ namespace ApiTemplate
                     static bool IsHealthCheckEndpoint(HttpContext httpContext)
                     {
                         var endpoint = httpContext.GetEndpoint();
-                        if (endpoint is object)
+                        if (endpoint is not null)
                         {
                             return endpoint.DisplayName == "Health checks";
                         }
@@ -106,6 +112,7 @@ namespace ApiTemplate
                     }
 #endif
                 });
+#endif
 #if Swagger
 
         public static IApplicationBuilder UseCustomSwaggerUI(this IApplicationBuilder application) =>
@@ -113,10 +120,7 @@ namespace ApiTemplate
                 options =>
                 {
                     // Set the Swagger UI browser document title.
-                    options.DocumentTitle = typeof(Startup)
-                        .Assembly
-                        .GetCustomAttribute<AssemblyProductAttribute>()
-                        .Product;
+                    options.DocumentTitle = AssemblyInformation.Current.Product;
                     // Set the Swagger UI to render at '/'.
                     options.RoutePrefix = string.Empty;
 
@@ -124,7 +128,7 @@ namespace ApiTemplate
                     options.DisplayRequestDuration();
 
 #if Versioning
-                    var provider = application.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
+                    var provider = application.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
                     foreach (var apiVersionDescription in provider
                         .ApiVersionDescriptions
                         .OrderByDescending(x => x.ApiVersion))

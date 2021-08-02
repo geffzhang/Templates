@@ -37,6 +37,9 @@
     "GitHubProject": {
       "longName": "github-project"
     },
+    "ReadMe": {
+      "longName": "readme"
+    },
     "TreatWarningsAsErrors": {
       "longName": "treat-warnings-as-errors"
     },
@@ -57,6 +60,12 @@
     },
     "CloudProvider": {
       "longName": "cloud-provider"
+    },
+    "OpenTelemetry": {
+      "longName": "open-telemetry"
+    },
+    "Logging": {
+      "longName": "logging"
     },
     "Analytics": {
       "longName": "analytics"
@@ -100,6 +109,9 @@
     "HttpsPort": {
       "longName": "https-port"
     },
+    "IISExpressHttpsPort": {
+      "longName": "iis-express-https-port"
+    },
     "IntegrationTest": {
       "longName": "integration-test"
     },
@@ -109,11 +121,11 @@
     "Docker": {
       "longName": "docker"
     },
+    "DockerRegistry": {
+      "longName": "docker-registry"
+    },
     "GitHubActions": {
       "longName": "github-actions"
-    },
-    "SkipRestore": {
-      "longName": "no-restore"
     },
     "SkipOpenToDo": {
       "longName": "no-open-todo"

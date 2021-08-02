@@ -1,8 +1,16 @@
 namespace GraphQLTemplate
 {
+    using System;
+    using Boxed.Mapping;
+    using GraphQLTemplate.DataLoaders;
+    using GraphQLTemplate.Directives;
+    using GraphQLTemplate.Mappers;
+    using GraphQLTemplate.Models;
     using GraphQLTemplate.Repositories;
-    using GraphQLTemplate.Schemas;
     using GraphQLTemplate.Services;
+    using GraphQLTemplate.Types;
+    using HotChocolate.Execution.Configuration;
+    using HotChocolate.Types;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -15,27 +23,50 @@ namespace GraphQLTemplate
     /// </remarks>
     internal static class ProjectServiceCollectionExtensions
     {
+        public static IServiceCollection AddProjectMappers(this IServiceCollection services) =>
+            services
+                .AddSingleton<IImmutableMapper<HumanInput, Human>, HumanInputToHumanMapper>();
+
         public static IServiceCollection AddProjectServices(this IServiceCollection services) =>
             services
                 .AddSingleton<IClockService, ClockService>();
 
-        /// <summary>
-        /// Add project data repositories.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <returns>The services with caching services added.</returns>
         public static IServiceCollection AddProjectRepositories(this IServiceCollection services) =>
             services
                 .AddSingleton<IDroidRepository, DroidRepository>()
                 .AddSingleton<IHumanRepository, HumanRepository>();
 
-        /// <summary>
-        /// Add project GraphQL schema and web socket types.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <returns>The services with caching services added.</returns>
-        public static IServiceCollection AddProjectSchemas(this IServiceCollection services) =>
-            services
-                .AddSingleton<MainSchema>();
+        public static IRequestExecutorBuilder AddProjectScalarTypes(this IRequestExecutorBuilder builder) =>
+            builder
+                // Bind a System.DateTime type to a GraphQL date type by default.
+                .BindRuntimeType<DateTime, DateType>();
+
+        public static IRequestExecutorBuilder AddProjectDirectives(this IRequestExecutorBuilder builder) =>
+            builder
+                .AddDirectiveType<UpperDirectiveType>()
+                .AddDirectiveType<LowerDirectiveType>()
+                .AddDirectiveType<IncludeDirectiveType>()
+                .AddDirectiveType<SkipDirectiveType>();
+
+        public static IRequestExecutorBuilder AddProjectDataLoaders(this IRequestExecutorBuilder builder) =>
+            builder
+                .AddDataLoader<IDroidDataLoader, DroidDataLoader>()
+                .AddDataLoader<IHumanDataLoader, HumanDataLoader>();
+
+        public static IRequestExecutorBuilder AddProjectTypes(this IRequestExecutorBuilder builder) =>
+            builder
+                .SetSchema<MainSchema>()
+                .AddQueryType<QueryObject>()
+#if Mutations
+                .AddMutationType<MutationObject>()
+#endif
+#if Subscriptions
+                .AddSubscriptionType<SubscriptionObject>()
+#endif
+                .AddType<EpisodeEnumeration>()
+                .AddType<CharacterInterface>()
+                .AddType<DroidObject>()
+                .AddType<HumanObject>()
+                .AddType<HumanInputObject>();
     }
 }

@@ -45,7 +45,7 @@ namespace ApiTemplate.ViewModels
         /// </summary>
         /// <example>/cars?First=10&amp;After=MjAxOS0xMC0yNlQxNDozNDo1MC4xOTgwNzY2KzAwOjAw</example>
 #endif
-        public Uri NextPageUrl { get; set; }
+        public Uri? NextPageUrl { get; set; }
 
 #if Swagger
         /// <summary>
@@ -53,7 +53,7 @@ namespace ApiTemplate.ViewModels
         /// </summary>
         /// <example>/cars?First=10&amp;Before=MjAxOS0xMC0yNlQxNDozNDo1MC4xOTgwNzY2KzAwOjAw</example>
 #endif
-        public Uri PreviousPageUrl { get; set; }
+        public Uri? PreviousPageUrl { get; set; }
 
 #if Swagger
         /// <summary>
@@ -61,7 +61,7 @@ namespace ApiTemplate.ViewModels
         /// </summary>
         /// <example>/cars?First=10</example>
 #endif
-        public Uri FirstPageUrl { get; set; }
+        public Uri FirstPageUrl { get; set; } = default!;
 
 #if Swagger
         /// <summary>
@@ -69,7 +69,7 @@ namespace ApiTemplate.ViewModels
         /// </summary>
         /// <example>/cars?Last=10</example>
 #endif
-        public Uri LastPageUrl { get; set; }
+        public Uri LastPageUrl { get; set; } = default!;
 
         /// <summary>
         /// Gets the Link HTTP header value to add URL's to next, previous, first and last pages.
@@ -82,22 +82,22 @@ namespace ApiTemplate.ViewModels
         {
             var values = new List<string>(4);
 
-            if (this.HasNextPage && this.NextPageUrl is object)
+            if (this.HasNextPage && this.NextPageUrl is not null)
             {
                 values.Add(GetLinkValueItem(NextLinkItem, this.NextPageUrl));
             }
 
-            if (this.HasPreviousPage && this.PreviousPageUrl is object)
+            if (this.HasPreviousPage && this.PreviousPageUrl is not null)
             {
                 values.Add(GetLinkValueItem(PreviousLinkItem, this.PreviousPageUrl));
             }
 
-            if (this.FirstPageUrl is object)
+            if (this.FirstPageUrl is not null)
             {
                 values.Add(GetLinkValueItem(FirstLinkItem, this.FirstPageUrl));
             }
 
-            if (this.LastPageUrl is object)
+            if (this.LastPageUrl is not null)
             {
                 values.Add(GetLinkValueItem(LastLinkItem, this.LastPageUrl));
             }

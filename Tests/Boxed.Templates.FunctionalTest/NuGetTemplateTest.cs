@@ -1,7 +1,6 @@
 namespace Boxed.Templates.FunctionalTest
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -30,22 +29,21 @@ namespace Boxed.Templates.FunctionalTest
         [Trait("IsUsingDotnetRun", "false")]
         [InlineData("NuGetDefaults")]
         [InlineData("NuGetStyleCop", "style-cop=true")]
-        [InlineData("NuGetDotnetCoreAndFramework", "dotnet-framework=true")]
-        [InlineData("NuGetDotnetFramework", "dotnet-core=false", "dotnet-framework=true")]
+        [InlineData("NuGetDotnetCore", "framework=netstandard2.0")]
+        [InlineData("NuGetDotnetFramework", "framework=net472")]
         public async Task RestoreBuildTest_NuGetDefaults_SuccessfulAsync(string name, params string[] arguments)
         {
             await InstallTemplateAsync().ConfigureAwait(false);
-            using (var tempDirectory = TempDirectory.NewTempDirectory())
+            await using (var tempDirectory = TempDirectory.NewTempDirectory())
             {
-                var dictionary = arguments
-                    .Select(x => x.Split('=', StringSplitOptions.RemoveEmptyEntries))
-                    .ToDictionary(x => x.First(), x => x.Last());
-                var project = await tempDirectory.DotnetNewAsync(TemplateName, name, dictionary).ConfigureAwait(false);
+                var project = await tempDirectory
+                    .DotnetNewAsync(TemplateName, name, arguments.ToArguments())
+                    .ConfigureAwait(false);
                 await project.DotnetRestoreAsync().ConfigureAwait(false);
                 await project.DotnetBuildAsync().ConfigureAwait(false);
 
-                if (!arguments.Contains("dotnet-framework=true") ||
-                    (arguments.Contains("dotnet-framework=true") && Environment.OSVersion.Platform == PlatformID.Win32NT))
+                if (!arguments.Contains("framework=net472") ||
+                    (arguments.Contains("framework=net472") && Environment.OSVersion.Platform == PlatformID.Win32NT))
                 {
                     // There seems to be a bug that stops xUnit working on Mono.
                     await project.DotnetTestAsync().ConfigureAwait(false);
@@ -60,12 +58,11 @@ namespace Boxed.Templates.FunctionalTest
         public async Task Cake_NuGetDefaults_SuccessfulAsync(string name, params string[] arguments)
         {
             await InstallTemplateAsync().ConfigureAwait(false);
-            using (var tempDirectory = TempDirectory.NewTempDirectory())
+            await using (var tempDirectory = TempDirectory.NewTempDirectory())
             {
-                var dictionary = arguments
-                    .Select(x => x.Split('=', StringSplitOptions.RemoveEmptyEntries))
-                    .ToDictionary(x => x.First(), x => x.Last());
-                var project = await tempDirectory.DotnetNewAsync(TemplateName, name, dictionary).ConfigureAwait(false);
+                var project = await tempDirectory
+                    .DotnetNewAsync(TemplateName, name, arguments.ToArguments())
+                    .ConfigureAwait(false);
                 await project.DotnetToolRestoreAsync().ConfigureAwait(false);
                 await project.DotnetCakeAsync().ConfigureAwait(false);
             }
@@ -84,12 +81,11 @@ namespace Boxed.Templates.FunctionalTest
             params string[] arguments)
         {
             await InstallTemplateAsync().ConfigureAwait(false);
-            using (var tempDirectory = TempDirectory.NewTempDirectory())
+            await using (var tempDirectory = TempDirectory.NewTempDirectory())
             {
-                var dictionary = arguments
-                    .Select(x => x.Split('=', StringSplitOptions.RemoveEmptyEntries))
-                    .ToDictionary(x => x.First(), x => x.Last());
-                var project = await tempDirectory.DotnetNewAsync(TemplateName, name, dictionary).ConfigureAwait(false);
+                var project = await tempDirectory
+                    .DotnetNewAsync(TemplateName, name, arguments.ToArguments())
+                    .ConfigureAwait(false);
                 await project.DotnetRestoreAsync().ConfigureAwait(false);
                 await project.DotnetBuildAsync().ConfigureAwait(false);
                 await project.DotnetTestAsync().ConfigureAwait(false);
@@ -108,16 +104,13 @@ namespace Boxed.Templates.FunctionalTest
         public async Task RestoreBuildTest_SignFalse_SuccessfulAsync()
         {
             await InstallTemplateAsync().ConfigureAwait(false);
-            using (var tempDirectory = TempDirectory.NewTempDirectory())
+            await using (var tempDirectory = TempDirectory.NewTempDirectory())
             {
                 var project = await tempDirectory
                     .DotnetNewAsync(
                         TemplateName,
                         "NuGetSignFalse",
-                        new Dictionary<string, string>()
-                        {
-                            { "sign", "false" },
-                        })
+                        new string[] { "sign=false" }.ToArguments())
                     .ConfigureAwait(false);
                 await project.DotnetRestoreAsync().ConfigureAwait(false);
                 await project.DotnetBuildAsync().ConfigureAwait(false);

@@ -16,9 +16,13 @@ The [Microsoft Orleans](https://dotnet.github.io/orleans/) project template uses
 - **Description** - A description of the project which determines the assembly description.
 - **Author** - The name of the author of the project which determines the assembly author and copyright information.
 - **Contact** - The contact details to use if someone wants to contact you about a security vulnerability or code of conduct issues.
-- **EditorConfig** - Add a .editorconfig file to set a fixed code style.
 - **ReadMe** - Add a README.md markdown file describing the project.
+- **EditorConfig** - Add a .editorconfig file to set a fixed code style.
 - **TreatWarningsAsErrors** - Treat warnings as errors.
+
+#### Ports
+
+- **HttpPort** (Default=8080) - Port number to use for the HTTP endpoint in `launchSettings.json`.
 
 #### Source Control
 
@@ -30,11 +34,16 @@ The [Microsoft Orleans](https://dotnet.github.io/orleans/) project template uses
 
 #### Continuous Integration (CI)
 
-- **GitHubActions** (Default=On) - Adds GitHub Actions continuous integration and automatic release drafting.
+- **GitHubActions** (Default=On) - Adds GitHub Actions continuous integration, automatic release drafting and [CodeQL](https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/about-code-scanning) security scanning.
 
 #### Security
 
 - **TLS** (Default=Off) - Adds TLS transport encryption to secure communication between the client and server.
+
+#### Telemetry
+
+- **Serilog** (Default=On) - Logging using [Serilog](https://serilog.net/) provides an excellent structured logging experience.
+- **OpenTelemetry** (Default=Off) - Instrument, generate, collect, and export telemetry data (metrics, logs, and traces) using the Open Telemetry standard.
 
 #### Analytics
 
@@ -44,15 +53,14 @@ The [Microsoft Orleans](https://dotnet.github.io/orleans/) project template uses
   - **None** (Default) - Not using any analytics.
 - **ApplicationInsightsKey** - Your Application Insights instrumentation key e.g. 11111111-2222-3333-4444-555555555555.
 
-#### Other
+#### Docker
 
 - **Docker** (Default=On) - Adds an optimised Dockerfile to add the ability build a Docker image.
+- **DockerRegistry** - The Docker container registry to push Docker images to.
+  - **GitHubContainerRegistry** (Default) - Push Docker images to the GitHub Container Registry.
+  - **DockerHub** - Push Docker images to Docker Hub.
 
 ## Always On Features
-
-#### Logging
-
-- **Serilog** - Has [Serilog](https://serilog.net/) built in for an excellent structured logging experience.
 
 #### Dashboard
 

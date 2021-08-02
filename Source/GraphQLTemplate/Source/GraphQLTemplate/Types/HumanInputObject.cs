@@ -1,22 +1,28 @@
 namespace GraphQLTemplate.Types
 {
-    using GraphQL.Types;
     using GraphQLTemplate.Models;
+    using HotChocolate.Types;
 
-    public class HumanInputObject : InputObjectGraphType<Human>
+    public class HumanInputObject : InputObjectType<HumanInput>
     {
-        public HumanInputObject()
+        protected override void Configure(IInputObjectTypeDescriptor<HumanInput> descriptor)
         {
-            this.Name = "HumanInput";
-            this.Description = "A humanoid creature from the Star Wars universe.";
+            descriptor
+                .Name("HumanInput")
+                .Description("A humanoid creature from the Star Wars universe.");
 
-            this.Field(x => x.Name)
+            descriptor
+                .Field(x => x.Name)
                 .Description("The name of the human.");
-            this.Field(x => x.DateOfBirth)
+            descriptor
+                .Field(x => x.DateOfBirth)
                 .Description("The humans date of birth.");
-            this.Field(x => x.HomePlanet, nullable: true)
+            descriptor
+                .Field(x => x.HomePlanet)
                 .Description("The home planet of the human.");
-            this.Field(x => x.AppearsIn, type: typeof(ListGraphType<EpisodeEnumeration>))
+            descriptor
+                .Field(x => x.AppearsIn)
+                .Type<ListType<NonNullType<EpisodeEnumeration>>>()
                 .Description("Which movie they appear in.");
         }
     }

@@ -6,12 +6,12 @@
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-      "publishAllPorts": true,
-      "useSSL": false
+      "publishAllPorts": true
     },
     //#endif
     "Development": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
       "externalUrlConfiguration": true,
       "launchUrl": "http://localhost:8080",
@@ -21,6 +21,7 @@
     },
     "Production": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
       "externalUrlConfiguration": true,
       "launchUrl": "http://localhost:8080",

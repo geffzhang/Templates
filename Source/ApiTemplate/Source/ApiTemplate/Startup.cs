@@ -65,6 +65,9 @@ namespace ApiTemplate
 #if HealthCheck
                 .AddCustomHealthChecks()
 #endif
+#if OpenTelemetry
+                .AddCustomOpenTelemetryTracing(this.webHostEnvironment)
+#endif
 #if Swagger
                 .AddCustomSwagger()
 #endif
@@ -106,6 +109,10 @@ namespace ApiTemplate
 #elif HostFiltering
                 .UseHostFiltering()
 #endif
+                .UseRouting()
+#if CORS
+                .UseCors(CorsPolicyName.AllowAny)
+#endif
 #if ResponseCaching
                 .UseResponseCaching()
 #endif
@@ -120,12 +127,10 @@ namespace ApiTemplate
                 .UseIf(
                     this.webHostEnvironment.IsDevelopment(),
                     x => x.UseDeveloperExceptionPage())
-                .UseRouting()
-#if CORS
-                .UseCors(CorsPolicyName.AllowAny)
-#endif
                 .UseStaticFilesWithCacheControl()
+#if Serilog
                 .UseCustomSerilogRequestLogging()
+#endif
                 .UseEndpoints(
                     builder =>
                     {

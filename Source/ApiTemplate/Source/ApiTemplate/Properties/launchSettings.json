@@ -4,7 +4,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:43300/",
+      "applicationUrl": "http://localhost:44300/",
       //#if (HttpsEverywhere)
       "sslPort": 44300
       ////#else
@@ -19,13 +19,62 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true,
-      //#if (HttpsEverywhere)
-      "useSSL": true
-      ////#else
-      //"useSSL": false
-      //#endif
+      "environmentVariables": {
+        //#if (HttpsEverywhere)
+        "Kestrel__Endpoints__Http__Url": "http://*",
+        "Kestrel__Endpoints__Https__Url": "https://*",
+
+        // To run the application with Docker over HTTPS we need to use a developer certificate. This can be created and exported to a
+        // file using the dev-certs tool:
+        // dotnet dev-certs https --clean
+        // Windows (PowerShell): dotnet dev-certs https --export-path $env:APPDATA\ASP.NET\Https\ApiTemplate.pfx --password securepassword
+        // Mac/Linux: dotnet dev-certs https --export-path ${HOME}/.aspnet/https/ApiTemplate.pfx  --password securepassword
+        // dotnet dev-certs https --trust
+        // https://docs.microsoft.com/en-us/visualstudio/containers/container-build?view=vs-2019#ssl-enabled-aspnet-core-apps
+        "Kestrel__Certificates__Default__Path": "/root/.aspnet/https/ApiTemplate.pfx",
+        "Kestrel__Certificates__Default__Password": "securepassword"
+        ////#else
+        //"Kestrel__Endpoints__Http__Url": "http:////*"
+        //#endif
+      }
     },
     //#endif
+    "WSL 2": {
+      "commandName": "WSL2",
+      "launchBrowser": true,
+      //#if (HttpsEverywhere)
+      "launchUrl": "https://localhost:5001",
+      ////#else
+      //"launchUrl": "http:////localhost:5000",
+      //#endif
+      "environmentVariables": {
+        //#if (HttpsEverywhere)
+        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000",
+        ////#else
+        //"ASPNETCORE_URLS": "http:////localhost:5000",
+        //#endif
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "distributionName": ""
+    },
+    "WSL 2 Production": {
+      "commandName": "WSL2",
+      "launchBrowser": true,
+      //#if (HttpsEverywhere)
+      "launchUrl": "https://localhost:5001",
+      ////#else
+      //"launchUrl": "http:////localhost:5000",
+      //#endif
+      "environmentVariables": {
+        //#if (HttpsEverywhere)
+        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000",
+        ////#else
+        //"ASPNETCORE_URLS": "http:////localhost:5000",
+        //#endif
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
+      "distributionName": ""
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
@@ -64,6 +113,7 @@
     //#endif
     "Kestrel": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
       "launchUrl": "",
       //#if (HttpsEverywhere)
@@ -77,6 +127,7 @@
     },
     "Kestrel Production": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
       "launchUrl": "",
       //#if (HttpsEverywhere)

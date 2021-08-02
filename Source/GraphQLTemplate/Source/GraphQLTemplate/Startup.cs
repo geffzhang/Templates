@@ -1,13 +1,10 @@
 namespace GraphQLTemplate
 {
     using Boxed.AspNetCore;
-    using GraphQL.Server;
-    using GraphQL.Server.Ui.Playground;
-    using GraphQL.Server.Ui.Voyager;
 #if CORS
     using GraphQLTemplate.Constants;
+    using HotChocolate.AspNetCore;
 #endif
-    using GraphQLTemplate.Schemas;
     using Microsoft.AspNetCore.Builder;
 #if HealthCheck
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -63,7 +60,10 @@ namespace GraphQLTemplate
                 .AddCustomStrictTransportSecurity()
 #endif
 #if HealthCheck
-                .AddCustomHealthChecks()
+                .AddCustomHealthChecks(this.webHostEnvironment, this.configuration)
+#endif
+#if OpenTelemetry
+                .AddCustomOpenTelemetryTracing(this.webHostEnvironment)
 #endif
                 .AddHttpContextAccessor()
                 .AddServerTiming()
@@ -71,13 +71,16 @@ namespace GraphQLTemplate
                     .AddCustomJsonOptions(this.webHostEnvironment)
                     .AddCustomMvcOptions(this.configuration)
                 .Services
-                .AddCustomGraphQL(this.configuration, this.webHostEnvironment)
 #if Authorization
-                .AddCustomGraphQLAuthorization()
+                .AddCustomAuthorization()
 #endif
+#if Redis
+                .AddCustomRedis(this.webHostEnvironment, this.configuration)
+#endif
+                .AddCustomGraphQL(this.webHostEnvironment, this.configuration)
+                .AddProjectMappers()
                 .AddProjectServices()
-                .AddProjectRepositories()
-                .AddProjectSchemas();
+                .AddProjectRepositories();
 
         /// <summary>
         /// Configures the application and HTTP request pipeline. Configure is called after ConfigureServices is
@@ -94,6 +97,10 @@ namespace GraphQLTemplate
 #elif HostFiltering
                 .UseHostFiltering()
 #endif
+                .UseRouting()
+#if CORS
+                .UseCors(CorsPolicyName.AllowAny)
+#endif
 #if ResponseCompression
                 .UseResponseCompression()
 #endif
@@ -105,15 +112,20 @@ namespace GraphQLTemplate
                 .UseIf(
                     this.webHostEnvironment.IsDevelopment(),
                     x => x.UseDeveloperExceptionPage())
-                .UseRouting()
-#if CORS
-                .UseCors(CorsPolicyName.AllowAny)
+#if Subscriptions
+                .UseWebSockets()
 #endif
                 .UseStaticFilesWithCacheControl()
+#if Serilog
                 .UseCustomSerilogRequestLogging()
+#endif
                 .UseEndpoints(
                     builder =>
                     {
+                        var graphQLServerOptions = new GraphQLServerOptions();
+                        // Add Banana Cake Pop GraphQL client at /graphql.
+                        graphQLServerOptions.Tool.Enable = this.webHostEnvironment.IsDevelopment();
+                        builder.MapGraphQL().WithOptions(graphQLServerOptions);
 #if HealthCheck
 #if CORS
                         builder
@@ -128,19 +140,12 @@ namespace GraphQLTemplate
 #endif
 #endif
                     })
-#if Subscriptions
-                .UseWebSockets()
-                // Use the GraphQL subscriptions in the specified schema and make them available at /graphql.
-                .UseGraphQLWebSockets<MainSchema>()
-#endif
-                // Use the specified GraphQL schema and make them available at /graphql.
-                .UseGraphQL<MainSchema>()
                 .UseIf(
                     this.webHostEnvironment.IsDevelopment(),
                     x => x
                         // Add the GraphQL Playground UI to try out the GraphQL API at /.
-                        .UseGraphQLPlayground(new GraphQLPlaygroundOptions() { Path = "/" })
+                        .UseGraphQLPlayground("/")
                         // Add the GraphQL Voyager UI to let you navigate your GraphQL API as a spider graph at /voyager.
-                        .UseGraphQLVoyager(new GraphQLVoyagerOptions() { Path = "/voyager" }));
+                        .UseGraphQLVoyager("/voyager"));
     }
 }
