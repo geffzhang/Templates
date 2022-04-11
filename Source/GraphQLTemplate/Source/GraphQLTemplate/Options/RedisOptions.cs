@@ -1,7 +1,20 @@
-namespace GraphQLTemplate.Options
+namespace GraphQLTemplate.Options;
+
+using System.ComponentModel.DataAnnotations;
+using StackExchange.Redis;
+
+public class RedisOptions
 {
-    public class RedisOptions
+    [Required]
+    public string? ConnectionString { get; set; }
+
+    public ConfigurationOptions ConfigurationOptions
     {
-        public string? ConnectionString { get; set; }
+        get
+        {
+            var options = ConfigurationOptions.Parse(this.ConnectionString);
+            options.ClientName = AssemblyInformation.Current.Product;
+            return options;
+        }
     }
 }

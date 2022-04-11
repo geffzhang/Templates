@@ -5,7 +5,7 @@
 
 # Base image used by Visual Studio at development time
 # (See https://docs.microsoft.com/en-us/visualstudio/containers/container-msbuild-properties)
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS base
 # Open Container Initiative (OCI) labels (See https://github.com/opencontainers/image-spec/blob/master/annotations.md).
 LABEL org.opencontainers.image.title="PROJECT-TITLE" \
     org.opencontainers.image.description="PROJECT-DESCRIPTION" \
@@ -30,7 +30,7 @@ WORKDIR /app
 EXPOSE 80 11111 30000
 
 # SDK image used to build and publish the application
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS sdk
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS sdk
 # To use the debug build configuration pass --build-arg Configuration=Debug
 ARG Configuration=Release
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true \
@@ -42,13 +42,17 @@ COPY "Source/OrleansTemplate.Client/*.csproj" "Source/OrleansTemplate.Client/"
 COPY "Source/OrleansTemplate.Grains/*.csproj" "Source/OrleansTemplate.Grains/"
 COPY "Source/OrleansTemplate.Server/*.csproj" "Source/OrleansTemplate.Server/"
 COPY "Tests/OrleansTemplate.Server.IntegrationTest/*.csproj" "Tests/OrleansTemplate.Server.IntegrationTest/"
-RUN dotnet restore
+# Run the restore and cache the packages on the host for faster subsequent builds.
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore
 COPY . .
 # To view the files that have been copied into the container file system for debugging purposes uncomment this line
 # RUN apk add --no-cache tree && tree
-RUN dotnet build --configuration $Configuration --no-restore
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet build --configuration $Configuration --no-restore
 RUN dotnet test --configuration $Configuration --no-build
-RUN dotnet publish "Source/OrleansTemplate.Server/OrleansTemplate.Server.csproj" --configuration $Configuration --no-build --output /app
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet publish "Source/OrleansTemplate.Server/OrleansTemplate.Server.csproj" --configuration $Configuration --no-build --output /app
 
 # Runtime image used to run the application
 FROM base AS runtime

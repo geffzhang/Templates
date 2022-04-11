@@ -43,6 +43,9 @@
     "TreatWarningsAsErrors": {
       "longName": "treat-warnings-as-errors"
     },
+    "Controllers": {
+      "longName": "controllers"
+    },
     "Swagger": {
       "longName": "swagger"
     },
@@ -67,8 +70,8 @@
     "Logging": {
       "longName": "logging"
     },
-    "Analytics": {
-      "longName": "analytics"
+    "ApplicationInsights": {
+      "longName": "app-insights"
     },
     "ApplicationInsightsKey": {
       "longName": "app-insights-key"
@@ -87,6 +90,9 @@
     },
     "ResponseCompression": {
       "longName": "response-compression"
+    },
+    "DistributedCache": {
+      "longName": "distributed-cache"
     },
     "XmlFormatter": {
       "longName": "xml-formatter"
@@ -108,6 +114,9 @@
     },
     "HttpsPort": {
       "longName": "https-port"
+    },
+    "IISExpressHttpPort": {
+      "longName": "iis-express-http-port"
     },
     "IISExpressHttpsPort": {
       "longName": "iis-express-https-port"

@@ -1,9 +1,5 @@
-namespace GraphQLTemplate.Models
-{
-    using System;
-    using System.Collections.Generic;
+namespace GraphQLTemplate.Models;
 
-    public record HumanInput(string Name, string HomePlanet, DateTime DateOfBirth, List<Episode>? AppearsIn)
-    {
-    }
+public record class HumanInput(string Name, string HomePlanet, DateOnly DateOfBirth, List<Episode>? AppearsIn)
+{
 }

@@ -1,10 +1,8 @@
-namespace OrleansTemplate.Abstractions.Grains
-{
-    using System.Threading.Tasks;
-    using Orleans;
+namespace OrleansTemplate.Abstractions.Grains;
 
-    public interface IReminderGrain : IGrainWithGuidKey
-    {
-        Task SetReminderAsync(string reminder);
-    }
+using Orleans;
+
+public interface IReminderGrain : IGrainWithGuidKey
+{
+    ValueTask SetReminderAsync(string reminder);
 }

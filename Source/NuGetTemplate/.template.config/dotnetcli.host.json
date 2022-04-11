@@ -40,6 +40,9 @@
     "ContactXmlEncoded": {
       "isHidden": true
     },
+    "Comments": {
+      "longName": "comments"
+    },
     "ReadMe": {
       "longName": "readme"
     },
@@ -57,6 +60,15 @@
     },
     "License": {
       "longName": "license"
+    },
+    "AnalysisMode": {
+      "longName": "analysis-mode"
+    },
+    "ImplicitUsings": {
+      "longName": "implicit-usings"
+    },
+    "IsTrimmable": {
+      "longName": "trimmable"
     },
     "TreatWarningsAsErrors": {
       "longName": "treat-warnings-as-errors"

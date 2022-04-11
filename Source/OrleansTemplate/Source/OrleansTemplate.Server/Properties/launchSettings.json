@@ -11,20 +11,26 @@
     //#endif
     "Development": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
       "externalUrlConfiguration": true,
       "launchUrl": "http://localhost:8080",
+      //#if (HealthCheck)
+      "applicationUrl": "http://localhost:5000",
+      //#endif
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }
     },
     "Production": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
       "externalUrlConfiguration": true,
       "launchUrl": "http://localhost:8080",
+      //#if (HealthCheck)
+      "applicationUrl": "http://localhost:5000",
+      //#endif
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
@@ -34,7 +40,7 @@
       "commandName": "Executable",
       "executablePath": "dotnet",
       "workingDirectory": "$(ProjectDir)",
-      "commandLineArgs": "watch run",
+      "commandLineArgs": "watch",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }
@@ -43,7 +49,7 @@
       "commandName": "Executable",
       "executablePath": "dotnet",
       "workingDirectory": "$(ProjectDir)",
-      "commandLineArgs": "watch run",
+      "commandLineArgs": "watch",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

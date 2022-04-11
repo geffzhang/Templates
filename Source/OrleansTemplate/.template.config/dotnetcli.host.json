@@ -49,8 +49,8 @@
     "Logging": {
       "longName": "logging"
     },
-    "Analytics": {
-      "longName": "analytics"
+    "ApplicationInsights": {
+      "longName": "app-insights"
     },
     "ApplicationInsightsKey": {
       "longName": "app-insights-key"
@@ -79,11 +79,11 @@
     "GitHubActions": {
       "longName": "github-actions"
     },
-    "SkipInstallAzureStorageEmulator": {
-      "longName": "no-install-storage-emulator"
+    "SkipInstallAzuriteEmulator": {
+      "longName": "no-install-azurite-emulator"
     },
-    "SkiStartAzureStorageEmulator": {
-      "longName": "no-start-storage-emulator"
+    "SkipStartAzuriteEmulator": {
+      "longName": "no-start-azurite-emulator"
     }
   }
 }

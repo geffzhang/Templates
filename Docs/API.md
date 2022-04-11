@@ -14,6 +14,7 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 
 #### API
 
+- **Controllers** (Default=On) - Adds an example ASP.NET MVC Controller.
 - **Swagger** (Default=On) - Swagger is a format for describing the endpoints in your API and letting you try out your site using its user interface.
 - **Versioning** (Default=On) - Enable API versioning to version API endpoints.
 - **XmlFormatter** - Choose whether to use the XML input/output formatter and which serializer to use.
@@ -53,6 +54,10 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 
 - **Response Caching** (Default=On) - Response caching is allows the use of the `[ResponseCache]` attribute on your action methods. Cache settings (cache profiles) are stored in the configuration file and referred to by name.
 - **Response Compression** (Default=On) - Enables dynamic GZIP response compression of HTTP responses. Not enabled for HTTPS to avoid the BREACH security vulnerability.
+- **DistributedCache** - Adds [distributed caching](https://docs.microsoft.com/aspnet/core/performance/caching/distributed).
+  - **Redis** - Adds a Redis implementation for `IDistributedCache`.
+  - **InMemory** - Adds an in-memory implementation for `IDistributedCache`.
+  - **None** (Default) - No distributed cache added.
 
 #### Security
 
@@ -79,9 +84,7 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 #### Analytics
 
 - **HealthCheck** (Default=On) - A health-check endpoint that returns the status of this API and its dependencies, giving an indication of its health.
-- **Analytics** - Monitor internal information about how your application is running, as well as external user information.
-  - **Application Insights** - Monitor internal information about how your application is running, as well as external user information using the Microsoft Azure cloud.
-  - **None** (Default) - Not using any analytics.
+- **ApplicationInsights** - Monitor internal information about how your application is running, as well as external user information using the Microsoft Azure cloud.
 - **ApplicationInsightsKey** - Your Application Insights instrumentation key e.g. 11111111-2222-3333-4444-555555555555.
 
 #### Cloud
@@ -144,12 +147,22 @@ The ASP.NET Core API project template uses `dotnet new` to enable you to turn fe
 - **Command Pattern** - Writing all your code in your controllers can mean you end up with huge classes. The command pattern splits up each controller action into its own class.
 - **Configure CacheProfile in JSON** - All cache profiles can be configured from a configuration file.
 
-## How can I get it?
+## How can I install it?
 
 1. Install the latest [.NET Core SDK](https://dot.net).
-2. Run `dotnet new --install Boxed.Templates` to install the project template.
-3. Run `dotnet new api --help` to see how to select the feature of the project.
-5. Run `dotnet new api --name "MyProject"` along with any other custom options to create a project from the template.
+2. Run `dotnet new --install Boxed.Templates` to install the project templates.
+
+## How can I use it?
+
+#### Using Visual Studio:
+1. Select .NET Boxed from the project type drop down.
+2. Select the .NET Boxed template you want to install and follow the instructions.
+![Visual Studio New Project Dialogue](https://github.com/Dotnet-Boxed/Templates/blob/main/Images/VisualStudio-NewProject.png)
+
+#### Using the CLI:
+1. Choose a project template i.e. `api`, `graphql`, `nuget`, `orleans`.
+2. Run `dotnet new api --help` to see how to select the feature of the project.
+3. Run `dotnet new api --name "MyProject"` along with any other custom options to create a project from the template.
 
 ## Release Notes and To-Do List
 You can find release notes for each version [here](https://github.com/Dotnet-Boxed/Templates/releases) and a To-Do list of new features and enhancements coming soon in the [projects](https://github.com/Dotnet-Boxed/Templates/projects) tab.

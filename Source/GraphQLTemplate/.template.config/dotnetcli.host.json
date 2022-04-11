@@ -70,8 +70,8 @@
     "Logging": {
       "longName": "logging"
     },
-    "Analytics": {
-      "longName": "analytics"
+    "ApplicationInsights": {
+      "longName": "app-insights"
     },
     "ApplicationInsightsKey": {
       "longName": "app-insights-key"
@@ -91,6 +91,9 @@
     "ResponseCompression": {
       "longName": "response-compression"
     },
+    "DistributedCache": {
+      "longName": "distributed-cache"
+    },
     "HealthCheck": {
       "longName": "health-check"
     },
@@ -108,6 +111,9 @@
     },
     "HttpsPort": {
       "longName": "https-port"
+    },
+    "IISExpressHttpPort": {
+      "longName": "iis-express-http-port"
     },
     "IISExpressHttpsPort": {
       "longName": "iis-express-https-port"

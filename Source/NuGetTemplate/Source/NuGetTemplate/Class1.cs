@@ -1,9 +1,10 @@
-namespace NuGetTemplate
+namespace NuGetTemplate;
+
+#if Comments
+/// <summary>
+/// Some class.
+/// </summary>
+#endif
+public class Class1
 {
-    /// <summary>
-    /// Some class.
-    /// </summary>
-    public class Class1
-    {
-    }
 }

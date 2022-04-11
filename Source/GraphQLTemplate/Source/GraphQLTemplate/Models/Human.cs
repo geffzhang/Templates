@@ -1,15 +1,12 @@
-namespace GraphQLTemplate.Models
-{
-    using System;
+namespace GraphQLTemplate.Models;
 
-    public record Human(
-        Guid Id,
-        string Name,
-        string HomePlanet,
-        DateTime DateOfBirth,
-        DateTimeOffset Created,
-        DateTimeOffset Modified) :
-        Character(Id, Name, Created, Modified)
-    {
-    }
+public record class Human(
+    Guid Id,
+    string Name,
+    string HomePlanet,
+    DateOnly DateOfBirth,
+    DateTimeOffset Created,
+    DateTimeOffset Modified) :
+    Character(Id, Name, Created, Modified)
+{
 }

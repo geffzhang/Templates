@@ -1,10 +1,8 @@
-namespace OrleansTemplate.Abstractions.Grains.HealthChecks
-{
-    using System.Threading.Tasks;
-    using Orleans;
+namespace OrleansTemplate.Abstractions.Grains.HealthChecks;
 
-    public interface IStorageHealthCheckGrain : IGrainWithGuidKey
-    {
-        Task CheckAsync();
-    }
+using Orleans;
+
+public interface IStorageHealthCheckGrain : IGrainWithGuidKey
+{
+    ValueTask CheckAsync();
 }

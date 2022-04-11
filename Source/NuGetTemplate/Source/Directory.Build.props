@@ -3,6 +3,7 @@
   <PropertyGroup>
     <!-- Workaround to build this project: https://github.com/dotnet/templating/issues/1438 -->
     <GitHub>true</GitHub>
+    <IsTrimmable>true</IsTrimmable>
     <Sign>true</Sign>
   </PropertyGroup>
   <!--#endif-->
@@ -10,7 +11,8 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup Label="Build">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsTrimmable Condition="'$(IsTrimmable)' == 'true'">true</IsTrimmable>
+    <GenerateDocumentationFile Condition="'$(Comments)' == 'true'">true</GenerateDocumentationFile>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
@@ -29,15 +31,16 @@
   </PropertyGroup>
 
   <ItemGroup Label="Package References">
-    <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" PrivateAssets="all" Version="1.0.0" Condition="'$(AzureDevOpsServer)' == 'true'" />
-    <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" PrivateAssets="all" Version="1.0.0" Condition="'$(AzureRepos)' == 'true'" />
-    <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" PrivateAssets="all" Version="1.0.0" Condition="'$(Bitbucket)' == 'true'" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" Version="1.0.0" Condition="'$(GitHub)' == 'true'" />
-    <PackageReference Include="Microsoft.SourceLink.GitLab" PrivateAssets="all" Version="1.0.0" Condition="'$(GitLab)' == 'true'" />
+    <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" PrivateAssets="all" Version="1.1.1" Condition="'$(AzureDevOpsServer)' == 'true'" />
+    <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" PrivateAssets="all" Version="1.1.1" Condition="'$(AzureRepos)' == 'true'" />
+    <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" PrivateAssets="all" Version="1.1.1" Condition="'$(Bitbucket)' == 'true'" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" Version="1.1.1" Condition="'$(GitHub)' == 'true'" />
+    <PackageReference Include="Microsoft.SourceLink.GitLab" PrivateAssets="all" Version="1.1.1" Condition="'$(GitLab)' == 'true'" />
   </ItemGroup>
 
   <ItemGroup Label="Files">
     <None Include="..\..\Images\Icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

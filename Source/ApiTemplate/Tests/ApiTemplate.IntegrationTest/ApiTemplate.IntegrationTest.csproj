@@ -2,29 +2,29 @@
   <!--#if (AuthoringMode)-->
   <PropertyGroup>
     <!-- Modify these constants to enable/disable a feature to debug the template. Note that this only affects the C#. -->
-    <DefineConstants>$(DefineConstants);HttpsEverywhere;Serilog</DefineConstants>
+    <DefineConstants>$(DefineConstants);Controllers;HttpsEverywhere;Serilog;DistributedCacheRedis</DefineConstants>
     <!-- Workaround to build this project: https://github.com/dotnet/templating/issues/1438 -->
     <Serilog>true</Serilog>
   </PropertyGroup>
   <!--#endif-->
 
   <PropertyGroup Label="Build">
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
   </PropertyGroup>
 
   <ItemGroup Label="Package Versions">
-    <PackageReference Include="coverlet.collector" PrivateAssets="all" Version="3.1.0">
+    <PackageReference Include="coverlet.collector" PrivateAssets="all" Version="3.1.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.8" />
-    <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="Serilog.Sinks.XUnit" Version="2.0.4" Condition="'$(Serilog)' == 'true'" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.3" />
+    <PackageReference Include="Moq" Version="4.17.2" />
+    <PackageReference Include="Serilog.Sinks.XUnit" Version="3.0.3" Condition="'$(Serilog)' == 'true'" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" Version="2.4.3">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 

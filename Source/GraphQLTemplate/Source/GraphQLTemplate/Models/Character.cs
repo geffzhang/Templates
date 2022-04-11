@@ -1,12 +1,8 @@
-namespace GraphQLTemplate.Models
+namespace GraphQLTemplate.Models;
+
+public abstract record class Character(Guid Id, string Name, DateTimeOffset Created, DateTimeOffset Modified)
 {
-    using System;
-    using System.Collections.Generic;
+    public List<Episode> AppearsIn { get; } = new List<Episode>();
 
-    public abstract record Character(Guid Id, string Name, DateTimeOffset Created, DateTimeOffset Modified)
-    {
-        public List<Episode> AppearsIn { get; } = new List<Episode>();
-
-        public List<Guid> Friends { get; } = new List<Guid>();
-    }
+    public List<Guid> Friends { get; } = new List<Guid>();
 }

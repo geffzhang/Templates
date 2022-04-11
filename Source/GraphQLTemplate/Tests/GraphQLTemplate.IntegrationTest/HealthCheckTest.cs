@@ -1,34 +1,39 @@
-namespace GraphQLTemplate.IntegrationTest.Controllers
+namespace GraphQLTemplate.IntegrationTest.Controllers;
+
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Xunit;
+#if Serilog
+using Xunit.Abstractions;
+#endif
+
+public class HealthCheckTest : CustomWebApplicationFactory<Program>
 {
-    using System;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Xunit;
-    using Xunit.Abstractions;
+    private readonly HttpClient client;
 
-    public class HealthCheckTest : CustomWebApplicationFactory<Startup>
-    {
-        private readonly HttpClient client;
-
-        public HealthCheckTest(ITestOutputHelper testOutputHelper)
-            : base(testOutputHelper) =>
+#if Serilog
+    public HealthCheckTest(ITestOutputHelper testOutputHelper)
+        : base(testOutputHelper) =>
+#else
+    public HealthCheckTest() =>
+#endif
             this.client = this.CreateClient();
 
-        [Fact]
-        public async Task GetStatus_Default_Returns200OkAsync()
-        {
-            var response = await this.client.GetAsync(new Uri("/status", UriKind.Relative)).ConfigureAwait(false);
+    [Fact]
+    public async Task GetStatus_Default_Returns200OkAsync()
+    {
+        var response = await this.client.GetAsync(new Uri("/status", UriKind.Relative)).ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
 
-        [Fact]
-        public async Task GetStatusSelf_Default_Returns200OkAsync()
-        {
-            var response = await this.client.GetAsync(new Uri("/status/self", UriKind.Relative)).ConfigureAwait(false);
+    [Fact]
+    public async Task GetStatusSelf_Default_Returns200OkAsync()
+    {
+        var response = await this.client.GetAsync(new Uri("/status/self", UriKind.Relative)).ConfigureAwait(false);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 }

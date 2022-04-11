@@ -5,7 +5,7 @@
 
 # Base image used by Visual Studio at development time
 # (See https://docs.microsoft.com/en-us/visualstudio/containers/container-msbuild-properties)
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS base
 # Open Container Initiative (OCI) labels (See https://github.com/opencontainers/image-spec/blob/master/annotations.md).
 LABEL org.opencontainers.image.title="PROJECT-TITLE" \
     org.opencontainers.image.description="PROJECT-DESCRIPTION" \
@@ -34,7 +34,7 @@ EXPOSE 80 443
 #endif
 
 # SDK image used to build and publish the application
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS sdk
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS sdk
 # To use the debug build configuration pass --build-arg Configuration=Debug
 ARG Configuration=Release
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true \
@@ -43,13 +43,17 @@ WORKDIR /src
 COPY "GraphQLTemplate.sln" "."
 COPY "Source/GraphQLTemplate/*.csproj" "Source/GraphQLTemplate/"
 COPY "Tests/GraphQLTemplate.IntegrationTest/*.csproj" "Tests/GraphQLTemplate.IntegrationTest/"
-RUN dotnet restore
+# Run the restore and cache the packages on the host for faster subsequent builds.
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore
 COPY . .
 # To view the files that have been copied into the container file system for debugging purposes uncomment this line
 # RUN apk add --no-cache tree && tree
-RUN dotnet build --configuration $Configuration --no-restore
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet build --configuration $Configuration --no-restore
 RUN dotnet test --configuration $Configuration --no-build
-RUN dotnet publish "Source/GraphQLTemplate/GraphQLTemplate.csproj" --configuration $Configuration --no-build --output /app
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet publish "Source/GraphQLTemplate/GraphQLTemplate.csproj" --configuration $Configuration --no-build --output /app
 
 # Runtime image used to run the application
 FROM base AS runtime

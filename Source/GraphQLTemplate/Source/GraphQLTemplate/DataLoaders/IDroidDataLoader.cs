@@ -1,10 +1,8 @@
-namespace GraphQLTemplate.DataLoaders
-{
-    using System;
-    using GraphQLTemplate.Models;
-    using GreenDonut;
+namespace GraphQLTemplate.DataLoaders;
 
-    public interface IDroidDataLoader : IDataLoader<Guid, Droid>
-    {
-    }
+using GraphQLTemplate.Models;
+using GreenDonut;
+
+public interface IDroidDataLoader : IDataLoader<Guid, Droid>
+{
 }

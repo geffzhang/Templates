@@ -2,8 +2,10 @@
   <!--#if (AuthoringMode)-->
   <PropertyGroup>
     <!-- Workaround to build this project: https://github.com/dotnet/templating/issues/1438 -->
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <DotnetFramework>false</DotnetFramework>
     <EditorConfig>true</EditorConfig>
+    <ImplicitUsings>true</ImplicitUsings>
     <MIT>true</MIT>
     <Nullable>true</Nullable>
     <StyleCop>true</StyleCop>
@@ -15,6 +17,9 @@
     <LangVersion>latest</LangVersion>
     <EnforceCodeStyleInBuild Condition="'$(EditorConfig)' == 'true'">true</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode Condition="'$(AnalysisMode)' == 'AllEnabledByDefault'">AllEnabledByDefault</AnalysisMode>
+    <AnalysisMode Condition="'$(AnalysisMode)' == 'AllDisabledByDefault'">AllDisabledByDefault</AnalysisMode>
+    <ImplicitUsings Condition="'$(ImplicitUsings)' == 'true' AND '$(DotnetFramework)' == 'false'">enable</ImplicitUsings>
     <Nullable Condition="'$(Nullable)' == 'true'">enable</Nullable>
     <TreatWarningsAsErrors Condition="'$(TreatWarningsAsErrors)' == 'true'">true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -27,6 +32,7 @@
     <PackageLicenseExpression Condition="'$(MIT)' == 'true'">MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/GITHUB-USERNAME/GITHUB-PROJECT</PackageProjectUrl>
     <PackageIcon>Icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/GITHUB-USERNAME/GITHUB-PROJECT.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>https://github.com/GITHUB-USERNAME/GITHUB-PROJECT/releases</PackageReleaseNotes>
@@ -34,9 +40,9 @@
 
   <ItemGroup Label="Package References">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" Version="1.0.2" Condition="'$(DotnetFramework)' == 'true'" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" Version="16.10.56" />
-    <PackageReference Include="MinVer" PrivateAssets="all" Version="2.5.0" />
-    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" Version="1.2.0-beta.354" Condition="'$(StyleCop)' == 'true'" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" Version="17.1.46" />
+    <PackageReference Include="MinVer" PrivateAssets="all" Version="3.1.0" />
+    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" Version="1.2.0-beta.406" Condition="'$(StyleCop)' == 'true'" />
   </ItemGroup>
 
 </Project>
